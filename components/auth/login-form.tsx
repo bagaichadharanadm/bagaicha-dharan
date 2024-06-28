@@ -6,11 +6,19 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { LoginSchema } from '@/schemas/login-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTransition } from 'react';
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { useEffect, useState, useTransition } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
 export function LoginForm() {
+  const [formResponseError, setFormResponseError] = useState<{
+    error:
+      | {
+          error: string;
+        }
+      | undefined;
+  }>({ error: undefined });
   const [isPending, startTransition] = useTransition();
 
   const loginForm = useForm<z.infer<typeof LoginSchema>>({
@@ -21,12 +29,20 @@ export function LoginForm() {
     },
   });
 
+  useEffect(() => {
+    if (loginForm.formState.isSubmitSuccessful) {
+      loginForm.reset();
+    }
+  }, [loginForm.formState.isSubmitSuccessful]);
+
   const email = useWatch({ control: loginForm.control, name: 'email' });
   const password = useWatch({ control: loginForm.control, name: 'password' });
 
   const onSubmit: SubmitHandler<z.infer<typeof LoginSchema>> = (formData) => {
     startTransition(() => {
-      loginActions.login(formData);
+      loginActions.login(formData).then((error) => {
+        setFormResponseError({ error });
+      });
     });
   };
 
@@ -59,6 +75,12 @@ export function LoginForm() {
             </FormItem>
           )}
         />
+        {formResponseError.error && (
+          <FormMessage className="bg-destructive-foreground/95 p-2 rounded-md border border-red-300 flex justify-center items-center space-x-4">
+            <ExclamationTriangleIcon />
+            <span>{formResponseError.error.error}</span>
+          </FormMessage>
+        )}
         <Button type="submit" className="w-full" disabled={email.length < 10 || password.length < 8 || isPending}>
           Login
         </Button>
