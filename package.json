@@ -1,5 +1,9 @@
 {
   "private": true,
+  "type": "module",
+  "prisma": {
+    "seed": "node --loader ts-node/esm prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -41,6 +45,7 @@
     "encoding": "^0.1.13",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.5",
-    "prisma": "^5.16.1"
+    "prisma": "^5.16.1",
+    "ts-node": "^10.9.2"
   }
 }
