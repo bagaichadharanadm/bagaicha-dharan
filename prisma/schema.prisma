@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,7 +8,54 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Test {
-  id   Int    @id @default(autoincrement())
-  name String
+// ================================================================
+// AUTH MODELS
+// ================================================================
+
+// Account model for authentication providers (e.g., Google, Facebook)
+model Account {
+  id                String  @id @default(cuid()) // Unique identifier for the account
+  userId            String // User ID to link with User model
+  type              String // Type of authentication provider
+  provider          String // Name of the provider (e.g., Google)
+  providerAccountId String // Provider-specific account ID
+  refresh_token     String? @db.Text // Refresh token (optional)
+  access_token      String? @db.Text // Access token (optional)
+  expires_at        Int? // Token expiration timestamp (optional)
+  token_type        String? // Type of token (optional)
+  scope             String? // OAuth scopes (optional)
+  id_token          String? @db.Text // ID token (optional)
+  session_state     String? // Session state (optional)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId]) // Ensure unique provider and account ID combination
+}
+
+// Enum for user roles
+enum UserRole {
+  ADMIN
+  USER
+}
+
+// User model for application users
+model User {
+  id            String    @id @default(cuid()) // Unique identifier for the user
+  name          String? // User's name (optional)
+  email         String?   @unique // User's email (unique, optional)
+  emailVerified DateTime? // Email verification timestamp (optional)
+  image         String? // URL to the user's profile image (optional)
+  password      String? // User's password (optional)
+  role          UserRole  @default(USER) // User's role (default to USER)
+  accounts      Account[] // Relation to the Account model
+  // sessions      Session[]                        // Uncomment if using sessions
+}
+
+// VerificationToken model for email verification and password resets
+model VerificationToken {
+  identifier String // Identifier for the token (e.g., email)
+  token      String   @unique // Unique token
+  expires    DateTime // Token expiration timestamp
+
+  @@unique([identifier, token]) // Ensure unique combination of identifier and token
 }
