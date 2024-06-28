@@ -1,5 +1,5 @@
 export default async function Page() {
-  return <div>migration in progress</div>;
+  return <div></div>;
 }
 
 export const dynamic = "force-dynamic";
