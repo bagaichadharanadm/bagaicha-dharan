@@ -1,8 +1,7 @@
 {
   "private": true,
-  "type": "module",
   "prisma": {
-    "seed": "node --loader ts-node/esm prisma/seed.ts"
+    "seed": "ts-node --transpile-only prisma/seed.ts"
   },
   "scripts": {
     "dev": "next dev",
