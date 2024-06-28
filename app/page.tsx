@@ -1,3 +1,12 @@
+import prisma from "@/db";
+
 export default async function Page() {
-  return <div>hi</div>;
+  const testRecords = await prisma.test.findMany();
+  return (
+    <div>
+      {testRecords.map((rec) => {
+        return <div key={rec.id}>{rec.name}</div>;
+      })}
+    </div>
+  );
 }
