@@ -14,7 +14,24 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Test {
-  id   Int    @id @default(autoincrement())
-  name String
+model Employee {
+  id               String       @id @default(cuid())
+  name             String
+  permanentAddress String
+  temporaryAddress String
+  phoneNumber      String
+  hiringDate       DateTime
+  isActive         Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  employeeType     EmployeeType
+
+  @@map("employees")
+}
+
+enum EmployeeType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
 }
