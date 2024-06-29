@@ -100,7 +100,7 @@ model ItemMaster {
   supplier     SupplierMaster[] // One-to-many: one product can have multiple suppliers
   menuItems    MenuItemProduct[]
   credit       Credit[]
-  itemCategory String
+  itemCategory String?
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
   isActive     Boolean           @default(true)
