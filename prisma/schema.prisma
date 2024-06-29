@@ -73,6 +73,7 @@ enum Position {
   WAITER
   CASHIER
   CLEANER
+  KITCHEN_HELPER
 }
  
 // Enum for payment types
@@ -154,6 +155,7 @@ model ExpensesFact {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   isActive         Boolean        @default(true)
+  companyRentalProvision  Boolean
  
   @@map("expensesFact")
 }
