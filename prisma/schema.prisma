@@ -232,6 +232,7 @@ model MenuItem {
   name        String
   price       Float
   category    String
+  subcategory String?
   ingredients MenuItemProduct[]
   orderItems  OrderItem[]
   createdAt   DateTime          @default(now())
