@@ -155,7 +155,7 @@ model ExpensesFact {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   isActive         Boolean        @default(true)
-  companyRentalProvision  Boolean
+  companyRentalProvision  Boolean?
  
   @@map("expensesFact")
 }
