@@ -89,7 +89,16 @@ enum PaymentStatus {
   CREDIT
   PARTIAL_PAID
 }
- 
+enum itemCategory{
+
+KITCHEN
+BAR
+CAFE
+MISCELLANEOUS
+GROCERIES
+
+
+}
 model ItemMaster {
   id           String            @id @default(cuid())
   itemDesc_EN  String
@@ -100,7 +109,7 @@ model ItemMaster {
   supplier     SupplierMaster[] // One-to-many: one product can have multiple suppliers
   menuItems    MenuItemProduct[]
   credit       Credit[]
-  itemCategory String?
+  itemCategory itemCategory?
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
   isActive     Boolean           @default(true)
