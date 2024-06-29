@@ -78,7 +78,7 @@ enum Position {
 enum PaymentType {
   CASH
   CARD
-  QR_PAYMENT
+  QR
   CREDIT
 }
 
@@ -86,38 +86,88 @@ enum PaymentType {
 enum PaymentStatus {
   PAID
   CREDIT
-  PARTIAL_PAID
+  PARTIAL
+}
+
+enum ExpenseEntityType {
+  SUPPLIER
+  PERSONAL
+}
+
+enum ExpenseType {
+  PERSONAL
+  BUSINESS
 }
 
 model ItemMaster {
-  id           String            @id @default(cuid())
-  itemDesc_EN  String
-  itemDesc_NEP String?
-  standardUOM  String
-  comments     String?
-  expense      ExpensesFact[] // One-to-many: one product can have multiple expenses records
-  supplier     SupplierMaster[] // One-to-many: one product can have multiple suppliers
-  menuItems    MenuItemProduct[]
-  credit       Credit[]
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  isActive     Boolean           @default(true)
+  id              String            @id @default(cuid())
+  itemDesc_EN     String
+  itemDesc_NEP    String?
+  standardUOM     String
+  comments        String?
+  expenses        ExpensesFact[] // One-to-many: one product can have multiple expenses records
+  supplier        SupplierMaster[] // One-to-many: one product can have multiple suppliers
+  menuItems       MenuItemProduct[]
+  credit          Credit[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  SupplierExpense SupplierExpense[]
+  isActive        Boolean           @default(true)
 }
 
 model SupplierMaster {
-  id               String         @id @default(cuid())
+  id               String            @id @default(cuid())
   supplierName_EN  String
   supplierName_NEP String?
   contactPhone     Int
   currencyCode     String?
   contactEmail     String?
   comments         String?
-  expenses         ExpensesFact[] // One-to-many: one supplier can have multiple expense entries
   suppliedItems    ItemMaster[]
   credit           Credit[]
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  isActive         Boolean        @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  isActive         Boolean           @default(true)
+  SupplierExpense  SupplierExpense[]
+  ExpensesFact     ExpensesFact[]
+}
+
+model Expense {
+  id                String            @id @default(cuid())
+  tranDate          DateTime          @default(now())
+  paymentType       PaymentType
+  paymentStatus     PaymentStatus
+  expenseType       ExpenseType
+  expenseEntityType ExpenseEntityType
+  expenseEntityId   String // It can be either the person whom you are spending on or your supplier or your customer
+  amountSpent       Float
+  amountReceived    Float
+  invoiceAmount     Float
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  SupplierExpense   SupplierExpense[]
+  comment           String?
+}
+
+model SupplierExpense {
+  id               String          @id @default(cuid())
+  tranDate         DateTime        @default(now())
+  supplierId       String
+  supplier         String // Assuming you handle the supplier details via this string field
+  itemId           String
+  item             ItemMaster      @relation(fields: [itemId], references: [id])
+  quantityReceived Decimal
+  quantityDamaged  Decimal
+  amountPaid       Decimal
+  amountPending    Decimal
+  expense          Expense         @relation(fields: [expenseId], references: [id])
+  expenseId        String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  isActive         Boolean         @default(true)
+  SupplierMaster   SupplierMaster? @relation(fields: [supplierMasterId], references: [id])
+  supplierMasterId String?
+  comment          String?
 }
 
 model ExpensesFact {
@@ -147,7 +197,7 @@ model ExpensesFact {
 
 model Employee {
   id               String         @id @default(cuid())
-  employee_name    String
+  employeeName     String
   contactNumber    Int
   temporaryAddress String
   permanentAddress String
