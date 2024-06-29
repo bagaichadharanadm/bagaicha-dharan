@@ -160,8 +160,8 @@ model ExpensesFact {
  
 model Employee {
   id               String         @id @default(cuid())
-  employee_name    String
-  contactNumber    Int
+  employeeName    String
+  contactNumber    String?
   temporaryAddress String
   permanentAddress String
   position         Position

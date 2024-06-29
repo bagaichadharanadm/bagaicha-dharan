@@ -1,7 +1,7 @@
 export default function DevWIP1() {
   return (
     <div>
-      Work in progress....
+      Hello hi Bye BYe....
       {/* Dev content goes here */}
     </div>
   );
