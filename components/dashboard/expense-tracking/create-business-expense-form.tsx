@@ -4,7 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BusinessExpenseItemSchema, CreateBusinessExpenseSchema } from '@/schemas/create-business-expense-form';
+import {
+  BusinessExpenseItemSchema,
+  CreateBusinessExpenseSchema,
+} from '@/services/schemas/create-business-expense-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';

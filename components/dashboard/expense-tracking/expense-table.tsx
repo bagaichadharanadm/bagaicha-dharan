@@ -7,10 +7,11 @@ type ExpenseTableProps = {
     id: string;
     tranDate: Date;
     supplierId: string;
-    supplierName: string; // Assuming you have supplierName in your data
+    supplierName: string;
+    employeeId: string;
     employeeName: string;
     itemId: string;
-    itemName: string; // Assuming you have itemName in your data
+    itemName: string;
     quantity: number;
     amount: number;
     invoice: number;
@@ -30,6 +31,10 @@ export function ExpenseTable({ data, showHeader = true }: ExpenseTableProps) {
     };
     return date.toLocaleDateString('en-US', options).toUpperCase();
   };
+
+  // Separate rows with empty id and other rows
+  const rowsWithEmptyId = data.filter((expense) => expense.id === '');
+  const otherRows = data.filter((expense) => expense.id !== '');
 
   return (
     <div className="overflow-x-auto">
@@ -71,8 +76,8 @@ export function ExpenseTable({ data, showHeader = true }: ExpenseTableProps) {
           </TableHeader>
         )}
         <TableBody>
-          {data.map((expense, index) => (
-            <TableRow key={expense.id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+          {rowsWithEmptyId.map((expense, index) => (
+            <TableRow key={index} className="bg-green-100">
               <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border border-gray-300">
                 {formatDate(expense.tranDate)}
               </TableCell>
@@ -101,7 +106,41 @@ export function ExpenseTable({ data, showHeader = true }: ExpenseTableProps) {
                 {expense.paymentStatus}
               </TableCell>
               <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.comment === null ? '' : expense.comment}
+                {expense.comment}
+              </TableCell>
+            </TableRow>
+          ))}
+          {otherRows.map((expense, index) => (
+            <TableRow key={index + rowsWithEmptyId.length} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+              <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border border-gray-300">
+                {formatDate(expense.tranDate)}
+              </TableCell>
+              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                {expense.supplierName}
+              </TableCell>
+              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                {expense.employeeName}
+              </TableCell>
+              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                {expense.itemName}
+              </TableCell>
+              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                {expense.quantity}
+              </TableCell>
+              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right border border-gray-300">
+                {expense.amount}
+              </TableCell>
+              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                {expense.invoice}
+              </TableCell>
+              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                {expense.paymentType}
+              </TableCell>
+              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                {expense.paymentStatus}
+              </TableCell>
+              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                {expense.comment}
               </TableCell>
             </TableRow>
           ))}

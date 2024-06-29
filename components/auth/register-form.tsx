@@ -4,7 +4,7 @@ import { registerActions } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { RegisterSchema } from '@/schemas/register-schema';
+import { RegisterSchema } from '@/services/schemas/register-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';

@@ -4,7 +4,7 @@ import { loginActions } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { LoginSchema } from '@/schemas/login-schema';
+import { LoginSchema } from '@/services/schemas/login-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useEffect, useState, useTransition } from 'react';

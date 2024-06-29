@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { SupplierExpenseDetailSchema, SupplierExpenseSchema } from '@/schemas';
+import { SupplierExpenseDetailSchema, SupplierExpenseSchema } from '@/services/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PaymentStatus as PaymentStatusEnum, PaymentType as PaymentTypeEnum } from '@prisma/client';
 import { CalendarIcon, PlusCircledIcon } from '@radix-ui/react-icons';

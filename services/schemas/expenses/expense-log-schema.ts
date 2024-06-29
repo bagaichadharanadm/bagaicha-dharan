@@ -2,7 +2,6 @@ import { PaymentStatus as PaymentStatusEnum, PaymentType as paymentTypeEnum } fr
 import { z } from 'zod';
 
 export const ExpenseLogSchema = z.object({
-  id: z.string().nullable(),
   tranDate: z.date(),
   itemId: z.string(),
   supplierId: z.string(),
