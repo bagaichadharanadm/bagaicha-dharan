@@ -1,17 +1,17 @@
 generator client {
   provider = "prisma-client-js"
 }
-
+ 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL") // URL for connecting to the database
   directUrl = env("DIRECT_URL") // Direct URL for the database connection
 }
-
+ 
 // ================================================================
 // AUTH MODELS
 // ================================================================
-
+ 
 // Account model for authentication providers (e.g., Google, Facebook)
 model Account {
   id                String  @id @default(cuid()) // Unique identifier for the account
@@ -26,18 +26,18 @@ model Account {
   scope             String? // OAuth scopes (optional)
   id_token          String? @db.Text // ID token (optional)
   session_state     String? // Session state (optional)
-
+ 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+ 
   @@unique([provider, providerAccountId]) // Ensure unique provider and account ID combination
 }
-
+ 
 // Enum for user roles
 enum UserRole {
   ADMIN // Administrator role
   USER // Regular user role
 }
-
+ 
 // User model for application users
 model User {
   id            String    @id @default(cuid()) // Unique identifier for the user
@@ -50,30 +50,31 @@ model User {
   accounts      Account[] // Relation to the Account model
   // sessions      Session[]                        // Uncomment if using sessions
 }
-
+ 
 // VerificationToken model for email verification and password resets
 model VerificationToken {
   identifier String // Identifier for the token (e.g., email)
   token      String   @unique // Unique token
   expires    DateTime // Token expiration timestamp
-
+ 
   @@unique([identifier, token]) // Ensure unique combination of identifier and token
 }
-
+ 
 // ================================================================
 // RESTAURANT MODELS
 // ================================================================
-
+ 
 // Enum for employee positions
 enum Position {
   ADMIN
   MANAGER
   CHEF
+  HEAD_CHEF
   WAITER
   CASHIER
   CLEANER
 }
-
+ 
 // Enum for payment types
 enum PaymentType {
   CASH
@@ -81,14 +82,14 @@ enum PaymentType {
   QR_PAYMENT
   CREDIT
 }
-
+ 
 // Enum for payment statuses
 enum PaymentStatus {
   PAID
   CREDIT
   PARTIAL_PAID
 }
-
+ 
 model ItemMaster {
   id           String            @id @default(cuid())
   itemDesc_EN  String
@@ -99,15 +100,18 @@ model ItemMaster {
   supplier     SupplierMaster[] // One-to-many: one product can have multiple suppliers
   menuItems    MenuItemProduct[]
   credit       Credit[]
+  itemCategory String
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
   isActive     Boolean           @default(true)
 }
-
+ 
 model SupplierMaster {
   id               String         @id @default(cuid())
   supplierName_EN  String
   supplierName_NEP String?
+  companyName String
+  address String
   contactPhone     Int
   currencyCode     String?
   contactEmail     String?
@@ -119,7 +123,7 @@ model SupplierMaster {
   updatedAt        DateTime       @updatedAt
   isActive         Boolean        @default(true)
 }
-
+ 
 model ExpensesFact {
   transaction_date DateTime
   id               String         @id @default(cuid())
@@ -141,10 +145,10 @@ model ExpensesFact {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   isActive         Boolean        @default(true)
-
+ 
   @@map("expensesFact")
 }
-
+ 
 model Employee {
   id               String         @id @default(cuid())
   employee_name    String
@@ -160,7 +164,7 @@ model Employee {
   updatedAt        DateTime       @updatedAt
   isActive         Boolean        @default(true)
 }
-
+ 
 model Credit {
   id          String         @id @default(cuid())
   itemID      String
@@ -173,7 +177,7 @@ model Credit {
   updatedAt   DateTime       @updatedAt
   isActive    Boolean        @default(true)
 }
-
+ 
 model Customer {
   id            String    @id @default(cuid())
   name          String
@@ -186,7 +190,7 @@ model Customer {
   updatedAt     DateTime  @updatedAt
   isActive      Boolean   @default(true)
 }
-
+ 
 model Order {
   id          String      @id @default(cuid())
   customerId  String
@@ -201,7 +205,7 @@ model Order {
   updatedAt   DateTime    @updatedAt
   isActive    Boolean     @default(true)
 }
-
+ 
 model OrderItem {
   id         String   @id @default(cuid())
   orderId    String
@@ -213,7 +217,7 @@ model OrderItem {
   updatedAt  DateTime @updatedAt
   isActive   Boolean  @default(true)
 }
-
+ 
 model MenuItem {
   id          String            @id @default(cuid())
   name        String
@@ -225,7 +229,7 @@ model MenuItem {
   updatedAt   DateTime          @updatedAt
   isActive    Boolean           @default(true)
 }
-
+ 
 model MenuItemProduct {
   id         String     @id @default(cuid())
   menuItemId String
@@ -237,7 +241,7 @@ model MenuItemProduct {
   updatedAt  DateTime   @updatedAt
   isActive   Boolean    @default(true)
 }
-
+ 
 model Revenue {
   id        String   @id @default(cuid())
   amount    Float
@@ -247,7 +251,7 @@ model Revenue {
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
 }
-
+ 
 model GeneralExpense {
   id        String   @id @default(cuid())
   amount    Float
