@@ -1,29 +1,139 @@
-import { CreateSupplierExpenseForm } from '@/components/dashboard/expense-tracking/supplier/create-supplier-expense-form';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ExpenseLogForm } from '@/components/dashboard/expense-tracking/expense-log-form';
+import { ExpenseTable } from '@/components/dashboard/expense-tracking/expense-table';
+
+const dummyData = [
+  {
+    id: '1',
+    tranDate: new Date('2024-06-24'),
+    supplierName: 'Supplier X',
+    employeeName: 'John Doe',
+    itemName: 'Item 1',
+    quantity: 2,
+    amount: 50.25,
+    invoice: 12345,
+    paymentType: 'Credit Card',
+    paymentStatus: 'Paid',
+    comment: 'Sample comment 1',
+  },
+  {
+    id: '2',
+    tranDate: new Date('2024-06-24'),
+    supplierName: 'Supplier Y',
+    employeeName: 'Jane Smith',
+    itemName: 'Item 2',
+    quantity: 1,
+    amount: 35.75,
+    invoice: 12346,
+    paymentType: 'Cash',
+    paymentStatus: 'Pending',
+    comment: 'Sample comment 2',
+  },
+  {
+    id: '3',
+    tranDate: new Date('2024-06-24'),
+    supplierName: 'Supplier Z',
+    employeeName: 'Michael Brown',
+    itemName: 'Item 3',
+    quantity: 3,
+    amount: 75.5,
+    invoice: 12347,
+    paymentType: 'Bank Transfer',
+    paymentStatus: 'Overdue',
+    comment: 'Sample comment 3',
+  },
+  {
+    id: '4',
+    tranDate: new Date('2024-06-24'),
+    supplierName: 'Supplier A',
+    employeeName: 'Emily Davis',
+    itemName: 'Item 4',
+    quantity: 1,
+    amount: 20.0,
+    invoice: 12348,
+    paymentType: 'Credit Card',
+    paymentStatus: 'Paid',
+    comment: 'Sample comment 4',
+  },
+  {
+    id: '5',
+    tranDate: new Date('2024-06-24'),
+    supplierName: 'Supplier B',
+    employeeName: 'David Johnson',
+    itemName: 'Item 5',
+    quantity: 2,
+    amount: 40.0,
+    invoice: 12349,
+    paymentType: 'Cash',
+    paymentStatus: 'Pending',
+    comment: 'Sample comment 5',
+  },
+  {
+    id: '6',
+    tranDate: new Date('2024-06-24'),
+    supplierName: 'Supplier C',
+    employeeName: 'Jessica Wilson',
+    itemName: 'Item 6',
+    quantity: 1,
+    amount: 30.75,
+    invoice: 12350,
+    paymentType: 'Bank Transfer',
+    paymentStatus: 'Overdue',
+    comment: 'Sample comment 6',
+  },
+  {
+    id: '7',
+    tranDate: new Date('2024-06-24'),
+    supplierName: 'Supplier D',
+    employeeName: 'Robert Green',
+    itemName: 'Item 7',
+    quantity: 4,
+    amount: 90.25,
+    invoice: 12351,
+    paymentType: 'Credit Card',
+    paymentStatus: 'Paid',
+    comment: 'Sample comment 7',
+  },
+  {
+    id: '8',
+    tranDate: new Date('2024-06-24'),
+    supplierName: 'Supplier E',
+    employeeName: 'Emma White',
+    itemName: 'Item 8',
+    quantity: 2,
+    amount: 55.0,
+    invoice: 12352,
+    paymentType: 'Cash',
+    paymentStatus: 'Pending',
+    comment: 'Sample comment 8',
+  },
+  {
+    id: '9',
+    tranDate: new Date('2024-06-24'),
+    supplierName: 'Supplier F',
+    employeeName: 'Daniel Lee',
+    itemName: 'Item 9',
+    quantity: 3,
+    amount: 70.5,
+    invoice: 12353,
+    paymentType: 'Bank Transfer',
+    paymentStatus: 'Overdue',
+    comment: 'Sample comment 9',
+  },
+  {
+    id: '10',
+    tranDate: new Date('2024-06-24'),
+    supplierName: 'Supplier G',
+    employeeName: 'Olivia Brown',
+    itemName: 'Item 10',
+    quantity: 1,
+    amount: 25.75,
+    invoice: 12354,
+    paymentType: 'Credit Card',
+    paymentStatus: 'Paid',
+    comment: 'Sample comment 10',
+  },
+];
 
 export default function ExpenseTrackingPage() {
-  return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Create new expense</CardTitle>
-        <CardDescription>Add a new expense to your list</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="business" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="business">business expense</TabsTrigger>
-            <TabsTrigger value="personal">personal</TabsTrigger>
-          </TabsList>
-          <TabsContent value="business">
-            <CreateSupplierExpenseForm />
-          </TabsContent>
-          <TabsContent value="password">
-            <CreateSupplierExpenseForm />
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-      <CardFooter className="flex justify-between"></CardFooter>
-    </Card>
-  );
+  return <ExpenseLogForm data={dummyData} />;
 }

@@ -69,6 +69,7 @@ enum Position {
   ADMIN
   MANAGER
   CHEF
+  HEAD_CHEF
   WAITER
   CASHIER
   CLEANER
@@ -78,7 +79,7 @@ enum Position {
 enum PaymentType {
   CASH
   CARD
-  QR
+  QR_PAYMENT
   CREDIT
 }
 
@@ -86,7 +87,7 @@ enum PaymentType {
 enum PaymentStatus {
   PAID
   CREDIT
-  PARTIAL
+  PARTIAL_PAID
 }
 
 enum ExpenseEntityType {
@@ -105,7 +106,7 @@ model ItemMaster {
   itemDesc_NEP    String?
   standardUOM     String
   comments        String?
-  expenses        ExpensesFact[] // One-to-many: one product can have multiple expenses records
+  expenses        ExpenseLog[] // One-to-many: one product can have multiple expenses records
   supplier        SupplierMaster[] // One-to-many: one product can have multiple suppliers
   menuItems       MenuItemProduct[]
   credit          Credit[]
@@ -129,7 +130,7 @@ model SupplierMaster {
   updatedAt        DateTime          @updatedAt
   isActive         Boolean           @default(true)
   SupplierExpense  SupplierExpense[]
-  ExpensesFact     ExpensesFact[]
+  ExpenseLog       ExpenseLog[]
 }
 
 model Expense {
@@ -170,33 +171,29 @@ model SupplierExpense {
   comment          String?
 }
 
-model ExpensesFact {
-  transaction_date DateTime
-  id               String         @id @default(cuid())
-  itemID           String
-  supplierID       String
-  supplierDesc     String
-  itemDesc         String
-  quantity         Int
-  totalAmount      Float
-  paymentType      PaymentType
-  paymentStatus    PaymentStatus
-  billID           String?
-  billImageURL     String?
-  comments         String?
-  employeeID       String
-  product          ItemMaster     @relation(fields: [itemID], references: [id])
-  supplier         SupplierMaster @relation(fields: [supplierID], references: [id])
-  employee         Employee       @relation(fields: [employeeID], references: [id])
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  isActive         Boolean        @default(true)
-
-  @@map("expensesFact")
+// Main table for expense staff expense tracking.
+model ExpenseLog {
+  id              String         @id @default(cuid())
+  transactionDate DateTime
+  itemId          String
+  supplierId      String
+  quantity        Int
+  amount          Float
+  invoice         Float
+  paymentType     PaymentType
+  paymentStatus   PaymentStatus
+  comments        String?
+  employeeId      String
+  product         ItemMaster     @relation(fields: [itemId], references: [id])
+  supplier        SupplierMaster @relation(fields: [supplierId], references: [id])
+  employee        Employee       @relation(fields: [employeeId], references: [id])
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  isActive        Boolean        @default(true)
 }
 
 model Employee {
-  id               String         @id @default(cuid())
+  id               String       @id @default(cuid())
   employeeName     String
   contactNumber    Int
   temporaryAddress String
@@ -204,11 +201,11 @@ model Employee {
   position         Position
   joinDate         DateTime
   terminationDate  DateTime?
-  expenses         ExpensesFact[]
+  expenses         ExpenseLog[]
   orders           Order[]
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  isActive         Boolean        @default(true)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  isActive         Boolean      @default(true)
 }
 
 model Credit {
