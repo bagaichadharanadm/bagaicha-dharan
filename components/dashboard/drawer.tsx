@@ -5,9 +5,11 @@ import { LogoutForm } from '../auth/logout-form';
 
 export function Drawer() {
   const drawerItems = [
-    { name: 'bills', href: '/dashboard/bills' },
-    { name: 'expenses', href: '/dashboard/expenses' },
-    { name: 'settings', href: '/dashboard/settings' },
+    { name: 'expense tracking', href: '/dashboard/expense-tracking' },
+    { name: 'dev - wip -1', href: '/dashboard/dev-wip-1' },
+    { name: 'dev - wip -2', href: '/dashboard/dev-wip-2' },
+    { name: 'dev - wip -3', href: '/dashboard/dev-wip-3' },
+    { name: 'dev - wip -4', href: '/dashboard/dev-wip-3' },
   ];
 
   return (
