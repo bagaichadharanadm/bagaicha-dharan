@@ -14,7 +14,7 @@ export const CreateEmployeeExpenseSchema = z.object({
   comment: z.string().optional(),
 });
 
-export const CreateEmployeExpensesSchema = z.object({
+export const CreateEmployeeExpensesSchema = z.object({
   employeeId: z.string(),
   records: z.array(CreateEmployeeExpenseSchema),
 });

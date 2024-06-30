@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
-import { CreateEmployeExpensesSchema, CreateEmployeeExpenseSchema } from '@/schemas';
+import { CreateEmployeeExpenseSchema, CreateEmployeeExpensesSchema } from '@/schemas';
 import { CreateEmployeeExpenseFormProps } from '@/types/props';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PaymentStatus as PaymentStatusEnum, PaymentType as PaymentTypeEnum } from '@prisma/client';
@@ -50,8 +50,8 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
     },
   });
 
-  const form = useForm<z.infer<typeof CreateEmployeExpensesSchema>>({
-    resolver: zodResolver(CreateEmployeExpensesSchema),
+  const form = useForm<z.infer<typeof CreateEmployeeExpensesSchema>>({
+    resolver: zodResolver(CreateEmployeeExpensesSchema),
     defaultValues: { employeeId: employees[0].id, records: [] },
   });
 
@@ -473,13 +473,13 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
     );
   };
 
-  const onSubmit: SubmitHandler<z.infer<typeof CreateEmployeExpensesSchema>> = (formData) => {
-    startTransition(() => {
-      expenseTrackingActions.CreateExpense(formData).then(() => {
-        inputForm.reset();
-        form.reset();
-      });
-    });
+  const onSubmit: SubmitHandler<z.infer<typeof CreateEmployeeExpensesSchema>> = (formData) => {
+    // startTransition(() => {
+    //   expenseTrackingActions.CreateExpense(formData).then(() => {
+    //     inputForm.reset();
+    //     form.reset();
+    //   });
+    // });
   };
 
   return (

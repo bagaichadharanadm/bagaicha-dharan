@@ -163,7 +163,8 @@ model Expense {
   employee        Employee      @relation(fields: [employeeId], references: [id])
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-  isActive        Boolean       @default(true)
+  reviewed        Boolean       @default(false)
+  accepted        Boolean       @default(false)
 }
 
 model Employee {
