@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import prisma from '@/db';
 import { CreateEmployeeExpensesSchema } from '@/schemas';
 import { expenseServices } from '@/services';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
@@ -28,15 +29,12 @@ export async function CreateExpense(
   const session = await auth();
   if (!session) {
     redirect('/auth/login');
-    return { error: { message: 'User session expired. Please log in again.' } };
   }
 
   // Attempt to create expenses
-  try {
-    await expenseServices.createExpenses(validatedFields.data);
-    return { success: { message: 'Expenses added successfully.' } };
-  } catch (error) {
-    console.error('Error creating expenses:', error);
-    return { error: { message: 'Failed to add expenses. Please try again later.' } };
-  }
+
+  await expenseServices.createExpenses(validatedFields.data);
+  revalidatePath('/dashboard/expense-tracking/view');
+  revalidatePath('/dashboard/expense-tracking/edit');
+  return { success: { message: 'Expenses added successfully.' } };
 }
