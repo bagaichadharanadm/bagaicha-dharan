@@ -1,18 +1,10 @@
 'use client';
 
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatDate } from '@/lib/format-date';
 import { ExpenseTableProps } from '@/types/props';
 
 export function ExpenseTable({ data, showHeader = true }: ExpenseTableProps) {
-  const formatDate = (date: Date): string => {
-    const options: Intl.DateTimeFormatOptions = {
-      day: '2-digit',
-      month: 'short',
-      year: '2-digit',
-    };
-    return date.toLocaleDateString('en-US', options).toUpperCase();
-  };
-
   // Separate rows with empty id and other rows
   const rowsWithEmptyId = data.filter((expense) => expense.id === '');
   const otherRows = data.filter((expense) => expense.id !== '');

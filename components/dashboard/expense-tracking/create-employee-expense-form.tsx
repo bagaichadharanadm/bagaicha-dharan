@@ -74,7 +74,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
   const append = () => {
     startTransition(() => {
       formArray.append({
-        tranDate: inputForm.watch('tranDate'),
+        tranDate: inputForm.watch('tranDate') === undefined ? new Date() : inputForm.watch('tranDate'),
         itemId: inputForm.watch('itemId'),
         supplierId: inputForm.watch('supplierId'),
         employeeId: form.watch('employeeId'),
@@ -86,12 +86,11 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
         comment: inputForm.watch('comment'),
       });
     });
-    inputForm.resetField('quantity');
-    inputForm.resetField('amount');
-    inputForm.resetField('invoice');
+    inputForm.reset();
   };
 
   const FormTableCell = ({ children }: { children: React.ReactNode }) => {
+    console.log(formArray.fields);
     return (
       <TableCell className="px-2 py-1 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
         {children}
@@ -166,7 +165,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                 {form.watch('records').map((row, index) => (
                   <TableRow key={index} className={index % 2 === 0 ? 'bg-slate-300' : 'bg-slate-400'}>
                     {[
-                      { content: formatDate(row.tranDate) },
+                      { content: row.tranDate ? formatDate(row.tranDate) : formatDate(new Date()) },
                       { content: suppliers.find((supplier) => supplier.id === row.supplierId)?.name || '' },
                       { content: items.find((item) => item.id === row.itemId)?.name || '' },
                       { content: row.quantity },
