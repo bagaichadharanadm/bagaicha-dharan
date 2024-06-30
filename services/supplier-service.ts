@@ -16,6 +16,10 @@ export async function getAllSupplierNamesAndIds(): Promise<{ id: string; name: s
   }));
 }
 
+export async function getAllSuppliers(): Promise<SupplierMaster[]> {
+  return await prisma.supplierMaster.findMany({ orderBy: { id: 'asc' } });
+}
+
 export async function getSupplierById(id: string): Promise<SupplierMaster | null> {
   return await prisma.supplierMaster.findFirst({ where: { id } });
 }

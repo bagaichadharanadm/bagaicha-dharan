@@ -3,6 +3,7 @@ import { itemServices, supplierServices } from '@/services';
 
 export default async function ExpenseTrackingPage() {
   const suppliers = await supplierServices.getAllSupplierNamesAndIds();
+  const suppliers_ = await supplierServices.getAllSuppliers();
   const items = await itemServices.getAllItemNamesAndIds();
 
   return (
