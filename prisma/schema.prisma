@@ -120,7 +120,7 @@ model SupplierMaster {
   id               String            @id @default(cuid())
   supplierName_EN  String
   supplierName_NEP String?
-  contactPhone     Int
+  contactPhone     String?
   currencyCode     String?
   contactEmail     String?
   comments         String?
@@ -195,7 +195,7 @@ model ExpenseLog {
 model Employee {
   id               String       @id @default(cuid())
   employeeName     String
-  contactNumber    Int
+  contactNumber    String?
   temporaryAddress String
   permanentAddress String
   position         Position

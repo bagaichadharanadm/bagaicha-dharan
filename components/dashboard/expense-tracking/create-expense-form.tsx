@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, Table
 import { formatDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
 import { CreateExpenseSchema, CreateExpensesSchema } from '@/schemas';
+import { CrateExpenseFormProps } from '@/types/props';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PaymentStatus as PaymentStatusEnum, PaymentType as PaymentTypeEnum } from '@prisma/client';
 import { CalendarIcon, TrashIcon } from '@radix-ui/react-icons';
@@ -19,15 +20,15 @@ import { useTransition } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-export function CreateExpenseForm() {
+export function CreateExpenseForm({ items, suppliers }: CrateExpenseFormProps) {
   const [isPending, startTransition] = useTransition();
 
   const inputForm = useForm<z.infer<typeof CreateExpenseSchema>>({
     resolver: zodResolver(CreateExpenseSchema),
     defaultValues: {
       tranDate: new Date(),
-      itemId: '',
-      supplierId: '',
+      itemId: items[0].id,
+      supplierId: suppliers[0].id,
       employeeId: '',
       quantity: 1,
       amount: 1,
@@ -103,8 +104,8 @@ export function CreateExpenseForm() {
                   <TableRow key={index} className={index % 2 === 0 ? 'bg-slate-300' : 'bg-slate-400'}>
                     {[
                       { content: formatDate(row.tranDate) },
-                      { content: row.supplierId },
-                      { content: row.itemId },
+                      { content: suppliers.find((supplier) => supplier.id === row.supplierId)?.name || '' },
+                      { content: items.find((item) => item.id === row.itemId)?.name || '' },
                       { content: row.quantity },
                       { content: row.amount },
                       { content: row.invoice },
@@ -185,24 +186,12 @@ export function CreateExpenseForm() {
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue>
-                                  {[
-                                    { id: 'id-1', name: 'Name 1' },
-                                    { id: 'id-2', name: 'Name 2' },
-                                    { id: 'id-3', name: 'Name 3' },
-                                    { id: 'id-4', name: 'Name 4' },
-                                    { id: 'id-5', name: 'Name 5' },
-                                  ].find((supplier) => supplier.id === field.value)?.name || 'select supplier'}
+                                  {suppliers.find((supplier) => supplier.id === field.value)?.name || 'select supplier'}
                                 </SelectValue>
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {[
-                                { id: 'id-1', name: 'Name 1' },
-                                { id: 'id-2', name: 'Name 2' },
-                                { id: 'id-3', name: 'Name 3' },
-                                { id: 'id-4', name: 'Name 4' },
-                                { id: 'id-5', name: 'Name 5' },
-                              ].map((supplier, index) => (
+                              {suppliers.map((supplier, index) => (
                                 <SelectItem key={index} value={supplier.id}>
                                   {supplier.name}
                                 </SelectItem>
@@ -225,24 +214,12 @@ export function CreateExpenseForm() {
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue>
-                                  {[
-                                    { id: 'id-1', name: 'Name 1' },
-                                    { id: 'id-2', name: 'Name 2' },
-                                    { id: 'id-3', name: 'Name 3' },
-                                    { id: 'id-4', name: 'Name 4' },
-                                    { id: 'id-5', name: 'Name 5' },
-                                  ].find((item) => item.id === field.value)?.name || 'select item'}
+                                  {items.find((item) => item.id === field.value)?.name || 'select item'}
                                 </SelectValue>
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {[
-                                { id: 'id-1', name: 'Name 1' },
-                                { id: 'id-2', name: 'Name 2' },
-                                { id: 'id-3', name: 'Name 3' },
-                                { id: 'id-4', name: 'Name 4' },
-                                { id: 'id-5', name: 'Name 5' },
-                              ].map((item, index) => (
+                              {items.map((item, index) => (
                                 <SelectItem key={index} value={item.id}>
                                   {item.name}
                                 </SelectItem>
