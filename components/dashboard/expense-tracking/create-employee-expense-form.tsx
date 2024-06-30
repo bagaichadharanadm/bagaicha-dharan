@@ -25,14 +25,28 @@ import { CreateEmployeeExpenseSchema, CreateEmployeeExpensesSchema } from '@/sch
 import { CreateEmployeeExpenseFormProps } from '@/types/props';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PaymentStatus as PaymentStatusEnum, PaymentType as PaymentTypeEnum } from '@prisma/client';
-import { CalendarIcon, TrashIcon } from '@radix-ui/react-icons';
+import { CalendarIcon, CheckCircledIcon, ExclamationTriangleIcon, TrashIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export function CreateEmployeeExpenseForm({ items, suppliers, employees }: CreateEmployeeExpenseFormProps) {
   const [isPending, startTransition] = useTransition();
+
+  const [formResponse, setFormResponse] = useState<
+    | {
+        success?: {
+          message: string;
+        };
+      }
+    | {
+        error?: {
+          message: string;
+        };
+      }
+    | undefined
+  >(undefined);
 
   const inputForm = useForm<z.infer<typeof CreateEmployeeExpenseSchema>>({
     resolver: zodResolver(CreateEmployeeExpenseSchema),
@@ -432,6 +446,21 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
               </TableBody>
               <TableFooter></TableFooter>
             </Table>
+            <div className="w-full flex justify-center items-center">
+              {formResponse && 'success' in formResponse && (
+                <FormMessage className="bg-green-100 border border-green-300 shadow-md text-green-800 text-xs flex justify-center items-center py-1 px-2 rounded-md gap-2 min-w-[180px]">
+                  <CheckCircledIcon className="text-green-500 h-4 w-4" />
+                  <span>{formResponse.success?.message}</span>
+                </FormMessage>
+              )}
+
+              {formResponse && 'error' in formResponse && (
+                <FormMessage className="bg-red-100 border border-red-300 shadow-md text-red-800 text-xs flex justify-center items-center py-1 px-2 rounded-md gap-2 min-w-[180px]">
+                  <ExclamationTriangleIcon className="text-red-500 h-4 w-4" />
+                  <span>{formResponse.error?.message}</span>
+                </FormMessage>
+              )}
+            </div>
             <div className="flex gap-6  justify-start w-full">
               <Button
                 type="button"
@@ -474,12 +503,22 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
   };
 
   const onSubmit: SubmitHandler<z.infer<typeof CreateEmployeeExpensesSchema>> = (formData) => {
-    // startTransition(() => {
-    //   expenseTrackingActions.CreateExpense(formData).then(() => {
-    //     inputForm.reset();
-    //     form.reset();
-    //   });
-    // });
+    startTransition(() => {
+      expenseTrackingActions
+        .CreateExpense(formData)
+        .then((data) => {
+          setFormResponse(data);
+        })
+        .then(() => {
+          inputForm.reset();
+          form.reset();
+        })
+        .then(() => {
+          setTimeout(() => {
+            setFormResponse(undefined); // Clearing formResponse after 3 seconds
+          }, 2000); // Timeout set to 3 seconds (3000 milliseconds)
+        });
+    });
   };
 
   return (
