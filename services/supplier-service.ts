@@ -1,25 +1,25 @@
 import prisma from '@/db';
-import { SupplierMaster } from '@prisma/client';
+import { Supplier } from '@prisma/client';
 
 export async function getAllSupplierNamesAndIds(): Promise<{ id: string; name: string }[]> {
-  const suppliers = await prisma.supplierMaster.findMany({
+  const suppliers = await prisma.supplier.findMany({
     select: {
       id: true,
-      supplierName_EN: true,
+      supplierName: true,
     },
     orderBy: { id: 'asc' },
   });
 
   return suppliers.map((supplier) => ({
     id: supplier.id,
-    name: supplier.supplierName_EN,
+    name: supplier.supplierName,
   }));
 }
 
-export async function getAllSuppliers(): Promise<SupplierMaster[]> {
-  return await prisma.supplierMaster.findMany({ orderBy: { id: 'asc' } });
+export async function getAllSuppliers(): Promise<Supplier[]> {
+  return await prisma.supplier.findMany({ orderBy: { id: 'asc' } });
 }
 
-export async function getSupplierById(id: string): Promise<SupplierMaster | null> {
-  return await prisma.supplierMaster.findFirst({ where: { id } });
+export async function getSupplierById(id: string): Promise<Supplier | null> {
+  return await prisma.supplier.findFirst({ where: { id } });
 }

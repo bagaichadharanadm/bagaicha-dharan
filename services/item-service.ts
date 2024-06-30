@@ -1,25 +1,25 @@
 import prisma from '@/db';
-import { ItemMaster } from '@prisma/client';
+import { Item } from '@prisma/client';
 
-export async function getAllItems(): Promise<ItemMaster[]> {
-  return await prisma.itemMaster.findMany({ orderBy: { id: 'asc' } });
+export async function getAllItems(): Promise<Item[]> {
+  return await prisma.item.findMany({ orderBy: { id: 'asc' } });
 }
 
 export async function getAllItemNamesAndIds() {
-  const suppliers = await prisma.itemMaster.findMany({
+  const suppliers = await prisma.item.findMany({
     select: {
       id: true,
-      itemDesc_EN: true,
+      itemDesc: true,
     },
     orderBy: { id: 'asc' },
   });
 
   return suppliers.map((supplier) => ({
     id: supplier.id,
-    name: supplier.itemDesc_EN,
+    name: supplier.itemDesc,
   }));
 }
 
-export async function getItemById(id: string): Promise<ItemMaster | null> {
-  return await prisma.itemMaster.findFirst({ where: { id } });
+export async function getItemById(id: string): Promise<Item | null> {
+  return await prisma.item.findFirst({ where: { id } });
 }
