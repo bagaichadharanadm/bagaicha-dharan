@@ -1,6 +1,17 @@
 'use client';
 
 import { expenseTrackingActions } from '@/actions';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -84,6 +95,8 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
               name="employeeId"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>Select Employee</FormLabel>
+
                   <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
                     <FormControl>
                       <SelectTrigger>
@@ -92,6 +105,10 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                         </SelectValue>
                       </SelectTrigger>
                     </FormControl>
+                    <FormDescription>
+                      Expense will be recorded <br /> underselected employee.
+                    </FormDescription>
+
                     <SelectContent>
                       {employees.map((employee, index) => (
                         <SelectItem key={index} value={employee.id}>
@@ -210,60 +227,65 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                     />
                   </FormTableCell>
                   <FormTableCell>
-                    <FormField
-                      control={inputForm.control}
-                      name="supplierId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue>
-                                  {suppliers.find((supplier) => supplier.id === field.value)?.name || 'select supplier'}
-                                </SelectValue>
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {suppliers.map((supplier, index) => (
-                                <SelectItem key={index} value={supplier.id}>
-                                  {supplier.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormDescription />
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="pt-2">
+                      <FormField
+                        control={inputForm.control}
+                        name="supplierId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue>
+                                    {suppliers.find((supplier) => supplier.id === field.value)?.name ||
+                                      'select supplier'}
+                                  </SelectValue>
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {suppliers.map((supplier, index) => (
+                                  <SelectItem key={index} value={supplier.id}>
+                                    {supplier.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </FormTableCell>
                   <FormTableCell>
-                    <FormField
-                      control={inputForm.control}
-                      name="itemId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue>
-                                  {items.find((item) => item.id === field.value)?.name || 'select item'}
-                                </SelectValue>
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {items.map((item, index) => (
-                                <SelectItem key={index} value={item.id}>
-                                  {item.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormDescription />
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="pt-2">
+                      <FormField
+                        control={inputForm.control}
+                        name="itemId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue>
+                                    {items.find((item) => item.id === field.value)?.name || 'select item'}
+                                  </SelectValue>
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {items.map((item, index) => (
+                                  <SelectItem key={index} value={item.id}>
+                                    {item.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </FormTableCell>
                   <FormTableCell>
                     <FormField
@@ -423,9 +445,27 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
               >
                 Delete All
               </Button>
-              <Button type="submit" variant={'default'} disabled={form.watch('records').length === 0 || isPending}>
-                Save
-              </Button>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" disabled={form.watch('records').length === 0 || isPending}>
+                    Save
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete your account and remove your data from
+                      our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={form.handleSubmit(onSubmit)}>Yes</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </form>
@@ -435,7 +475,10 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
 
   const onSubmit: SubmitHandler<z.infer<typeof CreateEmployeExpensesSchema>> = (formData) => {
     startTransition(() => {
-      expenseTrackingActions.CreateExpense(formData);
+      expenseTrackingActions.CreateExpense(formData).then(() => {
+        inputForm.reset();
+        form.reset();
+      });
     });
   };
 

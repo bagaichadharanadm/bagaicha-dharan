@@ -1,5 +1,6 @@
 import { CreateEmployeeExpenseForm } from '@/components/dashboard/expense-tracking/create-employee-expense-form';
 import { employeeServices, itemServices, supplierServices } from '@/services';
+import { Suspense } from 'react';
 
 export default async function ExpenseTrackingPage() {
   const suppliers = await supplierServices.getAllSupplierNamesAndIds();
