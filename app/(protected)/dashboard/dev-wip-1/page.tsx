@@ -1,4 +1,4 @@
-export default function DevWIP1() {
+export default async function DevWIP1() {
   return (
     <div>
       Hello hi Bye BYe....

@@ -13,11 +13,6 @@ export default function DashboardLayout({
 
       {/* Main content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Drawer */}
-        <div className="flex-shrink-0 lg:w-64 md:w-48 sm:w-32 w-20 overflow-y-auto scrollbar-hide border-r border-gray-300 bg-gray-200">
-          <Drawer />
-        </div>
-
         {/* Main content */}
         <div className="flex-1 p-4 overflow-y-auto scrollbar-hide bg-gray-100">{children}</div>
       </div>
