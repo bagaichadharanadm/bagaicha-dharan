@@ -1,17 +1,17 @@
 generator client {
   provider = "prisma-client-js"
 }
- 
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL") // URL for connecting to the database
   directUrl = env("DIRECT_URL") // Direct URL for the database connection
 }
- 
+
 // ================================================================
 // AUTH MODELS
 // ================================================================
- 
+
 // Account model for authentication providers (e.g., Google, Facebook)
 model Account {
   id                String  @id @default(cuid()) // Unique identifier for the account
@@ -26,18 +26,18 @@ model Account {
   scope             String? // OAuth scopes (optional)
   id_token          String? @db.Text // ID token (optional)
   session_state     String? // Session state (optional)
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@unique([provider, providerAccountId]) // Ensure unique provider and account ID combination
 }
- 
+
 // Enum for user roles
 enum UserRole {
   ADMIN // Administrator role
   USER // Regular user role
 }
- 
+
 // User model for application users
 model User {
   id            String    @id @default(cuid()) // Unique identifier for the user
@@ -50,28 +50,24 @@ model User {
   accounts      Account[] // Relation to the Account model
   // sessions      Session[]                        // Uncomment if using sessions
 }
- 
+
 // VerificationToken model for email verification and password resets
 model VerificationToken {
   identifier String // Identifier for the token (e.g., email)
   token      String   @unique // Unique token
   expires    DateTime // Token expiration timestamp
- 
+
   @@unique([identifier, token]) // Ensure unique combination of identifier and token
 }
- 
-// ================================================================
-// RESTAURANT MODELS
-// ================================================================
-<<<<<<< HEAD
- 
-=======
 
 // ================================================================
 // RESTAURANT MODELS
 // ================================================================
 
->>>>>>> dev-auth
+// ================================================================
+// RESTAURANT MODELS
+// ================================================================
+
 // Enum for employee positions
 enum Position {
   ADMIN
@@ -83,7 +79,7 @@ enum Position {
   CLEANER
   KITCHEN_HELPER
 }
- 
+
 // Enum for payment types
 enum PaymentType {
   CASH
@@ -91,82 +87,14 @@ enum PaymentType {
   QR
   CREDIT
 }
- 
+
 // Enum for payment statuses
 enum PaymentStatus {
   PAID
   CREDIT
   PARTIAL
 }
-enum itemCategory{
 
-<<<<<<< HEAD
-KITCHEN
-BAR
-CAFE
-MISCELLANEOUS
-GROCERIES
-
-
-}
-model ItemMaster {
-  id           String            @id @default(cuid())
-  itemDesc_EN  String
-  itemDesc_NEP String?
-  standardUOM  String
-  comments     String?
-  expense      ExpensesFact[] // One-to-many: one product can have multiple expenses records
-  supplier     SupplierMaster[] // One-to-many: one product can have multiple suppliers
-  menuItems    MenuItemProduct[]
-  credit       Credit[]
-  itemCategory itemCategory?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  isActive     Boolean           @default(true)
-}
- 
-model SupplierMaster {
-  id               String         @id @default(cuid())
-  supplierName_EN  String
-  supplierName_NEP String?
-  companyName String?
-  address String?
-  contactPhone     String?
-  currencyCode     String?
-  contactEmail     String?
-  comments         String?
-  expenses         ExpensesFact[] // One-to-many: one supplier can have multiple expense entries
-  suppliedItems    ItemMaster[]
-  credit           Credit[]
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  isActive         Boolean        @default(true)
-}
- 
-model ExpensesFact {
-  transaction_date DateTime
-  id               String         @id @default(cuid())
-  itemID           String
-  supplierID       String
-  supplierDesc     String
-  itemDesc         String
-  quantity         Int
-  totalAmount      Float
-  paymentType      PaymentType
-  paymentStatus    PaymentStatus
-  billID           String?
-  billImageURL     String?
-  comments         String?
-  employeeID       String
-  product          ItemMaster     @relation(fields: [itemID], references: [id])
-  supplier         SupplierMaster @relation(fields: [supplierID], references: [id])
-  employee         Employee       @relation(fields: [employeeID], references: [id])
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  isActive         Boolean        @default(true)
- 
-  @@map("expensesFact")
-=======
 enum ExpenseEntityType {
   SUPPLIER
   PERSONAL
@@ -240,40 +168,25 @@ model Expense {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   isActive        Boolean       @default(true)
->>>>>>> dev-auth
 }
- 
+
 model Employee {
-<<<<<<< HEAD
-  id               String         @id @default(cuid())
-  employeeName    String
-  contactNumber    String?
-  temporaryAddress String
-  permanentAddress String
-=======
   id               String    @id @default(cuid())
   name             String
   contactNumber    String?
   temporaryAddress String?
   permanentAddress String?
->>>>>>> dev-auth
   position         Position
   joinDate         DateTime
   terminationDate  DateTime  @default("2100-12-31T23:59:59Z")
   expenses         Expense[]
   orders           Order[]
-<<<<<<< HEAD
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  isActive         Boolean        @default(true)
-  companyRentalProvision  Boolean?
-=======
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   isActive         Boolean   @default(true)
->>>>>>> dev-auth
+  companyRentalProvision Boolean
 }
- 
+
 model Credit {
   id         String   @id @default(cuid())
   itemId     String
@@ -286,27 +199,20 @@ model Credit {
   updatedAt  DateTime @updatedAt
   isActive   Boolean  @default(true)
 }
- 
+
 model Customer {
   id            String    @id @default(cuid())
   name          String
-<<<<<<< HEAD
-  email         String?    @unique
-  phoneNumber   String?       @unique
-  dob           DateTime?
-  lastVisitDate DateTime?
-=======
   email         String?   @unique
   phoneNumber   String?   @unique
   dob           DateTime?
   lastVisitDate DateTime? @default(now())
->>>>>>> dev-auth
   orders        Order[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   isActive      Boolean   @default(true)
 }
- 
+
 model Order {
   id          String      @id @default(cuid())
   customerId  String
@@ -321,7 +227,7 @@ model Order {
   updatedAt   DateTime    @updatedAt
   isActive    Boolean     @default(true)
 }
- 
+
 model OrderItem {
   id         String   @id @default(cuid())
   orderId    String
@@ -333,18 +239,14 @@ model OrderItem {
   updatedAt  DateTime @updatedAt
   isActive   Boolean  @default(true)
 }
- 
+
 model MenuItem {
   id          String                @id @default(cuid())
   name        String
   price       Float
   category    String
   subcategory String?
-<<<<<<< HEAD
-  ingredients MenuItemProduct[]
-=======
   ingredients MenuItemIngredients[]
->>>>>>> dev-auth
   orderItems  OrderItem[]
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt
@@ -352,16 +254,10 @@ model MenuItem {
   Item        Item?                 @relation(fields: [itemId], references: [id])
   itemId      String?
 }
-<<<<<<< HEAD
- 
-model MenuItemProduct {
-  id         String     @id @default(cuid())
-=======
 
 // suppose menu item momo ho vane momo k k tatwa le bancha vanne kura.
 model MenuItemIngredients {
   id         String   @id @default(cuid())
->>>>>>> dev-auth
   menuItemId String
   productId  String
   quantity   Int
@@ -371,7 +267,7 @@ model MenuItemIngredients {
   updatedAt  DateTime @updatedAt
   isActive   Boolean  @default(true)
 }
- 
+
 model Revenue {
   id        String   @id @default(cuid())
   amount    Float
@@ -381,7 +277,7 @@ model Revenue {
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
 }
- 
+
 model GeneralExpense {
   id        String   @id @default(cuid())
   amount    Float
