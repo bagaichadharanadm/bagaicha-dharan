@@ -35,7 +35,6 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
       invoice: 1,
       paymentType: 'CASH',
       paymentStatus: 'PAID',
-      invoiceAmount: 1,
       comment: '',
     },
   });
@@ -59,7 +58,6 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
         invoice: inputForm.watch('invoice'),
         paymentType: inputForm.watch('paymentType'),
         paymentStatus: inputForm.watch('paymentStatus'),
-        invoiceAmount: inputForm.watch('invoiceAmount'),
         comment: inputForm.watch('comment'),
       });
     });
