@@ -1,26 +1,7 @@
 'use client';
 
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-
-type ExpenseTableProps = {
-  data: {
-    id: string;
-    tranDate: Date;
-    supplierId: string;
-    supplierName: string;
-    employeeId: string;
-    employeeName: string;
-    itemId: string;
-    itemName: string;
-    quantity: number;
-    amount: number;
-    invoice: number;
-    paymentType: string;
-    paymentStatus: string;
-    comment: string;
-  }[];
-  showHeader?: boolean;
-};
+import { ExpenseTableProps } from '@/types/props';
 
 export function ExpenseTable({ data, showHeader = true }: ExpenseTableProps) {
   const formatDate = (date: Date): string => {

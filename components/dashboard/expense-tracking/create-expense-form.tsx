@@ -1,6 +1,6 @@
 'use client';
 
-import { ExpenseTable } from '@/components/dashboard/expense-tracking/expense-table';
+import { expenseTrackingActions } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form';
@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
-import { ExpenseLogSchema, ExpenseLogsSchema } from '@/services/schemas';
+import { CreateExpenseSchema, CreateExpensesSchema } from '@/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PaymentStatus as PaymentStatusEnum, PaymentType as PaymentTypeEnum } from '@prisma/client';
 import { CalendarIcon } from '@radix-ui/react-icons';
@@ -18,55 +19,28 @@ import { useTransition } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-type ExpenseLogFormProps = {
-  data: {
-    id: string;
-    tranDate: Date;
-    supplierId: string;
-    supplierName: string; // Assuming you have supplierName in your data
-    employeeId: string;
-    employeeName: string;
-    itemId: string;
-    itemName: string; // Assuming you have itemName in your data
-    quantity: number;
-    amount: number;
-    invoice: number;
-    paymentType: string;
-    paymentStatus: string;
-    comment: string;
-  }[];
-};
-export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
+export function CreateExpenseForm() {
   const [isPending, startTransition] = useTransition();
 
-  const inputForm = useForm<z.infer<typeof ExpenseLogSchema>>({
-    resolver: zodResolver(ExpenseLogSchema),
+  const inputForm = useForm<z.infer<typeof CreateExpenseSchema>>({
+    resolver: zodResolver(CreateExpenseSchema),
     defaultValues: {
       tranDate: new Date(),
       itemId: '',
       supplierId: '',
       employeeId: '',
-      quantity: 0,
-      amount: 0,
-      invoice: 0,
+      quantity: 1,
+      amount: 1,
+      invoice: 1,
       paymentType: 'CASH',
       paymentStatus: 'PAID',
-      invoiceAmount: 0,
+      invoiceAmount: 1,
       comment: '',
     },
   });
 
-  const formatDate = (date: Date): string => {
-    const options: Intl.DateTimeFormatOptions = {
-      day: '2-digit',
-      month: 'short',
-      year: '2-digit',
-    };
-    return date.toLocaleDateString('en-US', options).toUpperCase();
-  };
-
-  const form = useForm<z.infer<typeof ExpenseLogsSchema>>({
-    resolver: zodResolver(ExpenseLogsSchema),
+  const form = useForm<z.infer<typeof CreateExpensesSchema>>({
+    resolver: zodResolver(CreateExpensesSchema),
     defaultValues: { records: [] },
   });
 
@@ -94,43 +68,53 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
     inputForm.resetField('invoice');
   };
 
+  const FormTableCell = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+        {children}
+      </TableCell>
+    );
+  };
+
   const ExpenseLogForm = () => {
     return (
       <Form {...inputForm}>
-        <form>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-4 items-end">
             <Table className="min-w-full bg-white border border-gray-300">
               <TableHeader>
                 <TableRow className="bg-gray-200">
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                    Date
-                  </TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                    Supplier
-                  </TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                    Item
-                  </TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                    Quantity
-                  </TableHead>
-                  <TableHead className="px-6 py-3 text-right text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                    Amount
-                  </TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                    Invoice
-                  </TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                    Method
-                  </TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                    Status
-                  </TableHead>
+                  {['Date', 'Supplier', 'Item', 'Quantity', 'Amount', 'Invoice', 'Method', 'Status'].map(
+                    (header, index) => {
+                      return (
+                        <TableHead
+                          key={index}
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300"
+                        >
+                          {header}
+                        </TableHead>
+                      );
+                    },
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {form.watch('records').map((row, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <FormTableCell>{formatDate(row.tranDate)}</FormTableCell>
+                      <FormTableCell>{row.supplierId}</FormTableCell>
+                      <FormTableCell>{row.itemId}</FormTableCell>
+                      <FormTableCell>{row.quantity}</FormTableCell>
+                      <FormTableCell>{row.amount}</FormTableCell>
+                      <FormTableCell>{row.invoice}</FormTableCell>
+                      <FormTableCell>{row.paymentType}</FormTableCell>
+                      <FormTableCell>{row.paymentStatus}</FormTableCell>
+                    </TableRow>
+                  );
+                })}
                 <TableRow>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border border-gray-300">
+                  <FormTableCell>
                     <FormField
                       control={inputForm.control}
                       name="tranDate"
@@ -165,8 +149,8 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
                         </FormItem>
                       )}
                     />
-                  </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                  </FormTableCell>
+                  <FormTableCell>
                     <FormField
                       control={inputForm.control}
                       name="supplierId"
@@ -205,8 +189,8 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
                         </FormItem>
                       )}
                     />
-                  </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                  </FormTableCell>
+                  <FormTableCell>
                     <FormField
                       control={inputForm.control}
                       name="itemId"
@@ -215,7 +199,7 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
                           <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue>
+                                <SelectValue className="w-full">
                                   {[
                                     { id: 'id-1', name: 'Name 1' },
                                     { id: 'id-2', name: 'Name 2' },
@@ -245,8 +229,8 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
                         </FormItem>
                       )}
                     />
-                  </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right border border-gray-300">
+                  </FormTableCell>
+                  <FormTableCell>
                     <FormField
                       control={inputForm.control}
                       name="quantity"
@@ -259,15 +243,15 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
                               {...field}
                               onChange={(event) => field.onChange(+event.target.value)}
                               min="1"
-                              className="w-full"
+                              className="w-[100px]"
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                  </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right border border-gray-300">
+                  </FormTableCell>
+                  <FormTableCell>
                     <FormField
                       control={inputForm.control}
                       name="amount"
@@ -280,15 +264,15 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
                               {...field}
                               onChange={(event) => field.onChange(+event.target.value)}
                               min="1"
-                              className="w-full"
+                              className="w-[100px]"
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                  </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right border border-gray-300">
+                  </FormTableCell>
+                  <FormTableCell>
                     <FormField
                       control={inputForm.control}
                       name="invoice"
@@ -301,15 +285,15 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
                               {...field}
                               onChange={(event) => field.onChange(+event.target.value)}
                               min="1"
-                              className="w-full"
+                              className="w-[100px]"
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                  </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                  </FormTableCell>
+                  <FormTableCell>
                     <FormField
                       control={inputForm.control}
                       name="paymentStatus"
@@ -333,8 +317,8 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
                         </FormItem>
                       )}
                     />
-                  </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                  </FormTableCell>
+                  <FormTableCell>
                     <FormField
                       control={inputForm.control}
                       name="paymentType"
@@ -358,12 +342,12 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
                         </FormItem>
                       )}
                     />
-                  </TableCell>
+                  </FormTableCell>
                 </TableRow>
               </TableBody>
               <TableFooter></TableFooter>
             </Table>
-            <div className="flex gap-4">
+            <div className="flex gap-6  justify-end w-full">
               <Button
                 type="button"
                 variant={'outline'}
@@ -373,8 +357,8 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
               >
                 Add
               </Button>
-              <Button type="submit" disabled={form.watch('records').length === 0}>
-                Done
+              <Button type="submit" disabled={form.watch('records').length === 0 || isPending}>
+                Save
               </Button>
             </div>
           </div>
@@ -383,32 +367,15 @@ export function ExpenseLogForm({ data }: ExpenseLogFormProps) {
     );
   };
 
+  const onSubmit: SubmitHandler<z.infer<typeof CreateExpensesSchema>> = (formData) => {
+    startTransition(() => {
+      expenseTrackingActions.CreateExpense(formData);
+    });
+  };
+
   return (
     <div className="space-y-8">
       <ExpenseLogForm />
-      <h1 className="text-2xl">Today&apos;s expenses</h1>
-      <ExpenseTable
-        data={[
-          ...data,
-          ...formArray.fields.map((field) => ({
-            id: '',
-            tranDate: field.tranDate,
-            supplierId: field.supplierId,
-            supplierName: field.supplierId, // Assuming supplierName can be empty
-            employeeId: field.employeeId,
-            employeeName: field.employeeId, // Assuming employeeName can be empty
-            itemId: field.itemId,
-            itemName: field.itemId, // Assuming itemName can be empty
-            quantity: field.quantity,
-            amount: field.amount,
-            invoice: field.invoice,
-            paymentType: field.paymentType,
-            paymentStatus: field.paymentStatus,
-            comment: field.comment ?? '', // Ensure comment is a string
-          })),
-        ]}
-        showHeader={true}
-      />
     </div>
   );
 }
