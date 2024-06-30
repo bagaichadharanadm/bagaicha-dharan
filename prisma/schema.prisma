@@ -64,21 +64,27 @@ model VerificationToken {
 // RESTAURANT MODELS
 // ================================================================
 
+// ================================================================
+// RESTAURANT MODELS
+// ================================================================
+
 // Enum for employee positions
 enum Position {
   ADMIN
   MANAGER
   CHEF
-  WAITER
+  HEAD_CHEF
+  SERVICE
   CASHIER
   CLEANER
+  KITCHEN_HELPER
 }
 
 // Enum for payment types
 enum PaymentType {
   CASH
   CARD
-  QR_PAYMENT
+  QR
   CREDIT
 }
 
@@ -86,101 +92,118 @@ enum PaymentType {
 enum PaymentStatus {
   PAID
   CREDIT
-  PARTIAL_PAID
+  PARTIAL
 }
 
-model ItemMaster {
-  id           String            @id @default(cuid())
-  itemDesc_EN  String
-  itemDesc_NEP String?
-  standardUOM  String
-  comments     String?
-  expense      ExpensesFact[] // One-to-many: one product can have multiple expenses records
-  supplier     SupplierMaster[] // One-to-many: one product can have multiple suppliers
-  menuItems    MenuItemProduct[]
-  credit       Credit[]
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  isActive     Boolean           @default(true)
+enum ExpenseEntityType {
+  SUPPLIER
+  PERSONAL
 }
 
-model SupplierMaster {
-  id               String         @id @default(cuid())
-  supplierName_EN  String
-  supplierName_NEP String?
-  contactPhone     Int
-  currencyCode     String?
-  contactEmail     String?
-  comments         String?
-  expenses         ExpensesFact[] // One-to-many: one supplier can have multiple expense entries
-  suppliedItems    ItemMaster[]
-  credit           Credit[]
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  isActive         Boolean        @default(true)
+enum ExpenseType {
+  PERSONAL
+  BUSINESS
 }
 
-model ExpensesFact {
-  transaction_date DateTime
-  id               String         @id @default(cuid())
-  itemID           String
-  supplierID       String
-  supplierDesc     String
-  itemDesc         String
-  quantity         Int
-  totalAmount      Float
-  paymentType      PaymentType
-  paymentStatus    PaymentStatus
-  billID           String?
-  billImageURL     String?
-  comments         String?
-  employeeID       String
-  product          ItemMaster     @relation(fields: [itemID], references: [id])
-  supplier         SupplierMaster @relation(fields: [supplierID], references: [id])
-  employee         Employee       @relation(fields: [employeeID], references: [id])
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  isActive         Boolean        @default(true)
+enum ItemCategory {
+  KITCHEN
+  BAR
+  CAFE
+  MISCELLANEOUS
+  GROCERIES
+}
 
-  @@map("expensesFact")
+model Item {
+  id                  String                @id @default(cuid())
+  itemDesc            String
+  itemDescSecondary   String?
+  standardUOM         String
+  comments            String?
+  expense             Expense[] // One-to-many: one product can have multiple expenses records
+  credit              Credit[]
+  itemCategory        ItemCategory          @default(KITCHEN)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  isActive            Boolean               @default(true)
+  MenuItemIngredients MenuItemIngredients[]
+}
+
+model Supplier {
+  id                    String    @id @default(cuid())
+  supplierName          String
+  supplierNameSecondary String?
+  companyName           String? // supplier ko company
+  address               String?
+  contactPhone          String?
+  currencyCode          String?
+  contactEmail          String?
+  comments              String?
+  expenses              Expense[] // One-to-many: one supplier can have multiple expense entries
+  credit                Credit[]
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  isActive              Boolean   @default(true)
+}
+
+// Main table for expense staff expense tracking.
+model Expense {
+  id              String        @id @default(cuid())
+  transactionDate DateTime
+  itemId          String
+  supplierId      String
+  quantity        Int
+  amount          Float
+  invoice         Float
+  paymentType     PaymentType
+  paymentStatus   PaymentStatus
+  comments        String?
+  employeeId      String
+  item            Item          @relation(fields: [itemId], references: [id])
+  supplier        Supplier      @relation(fields: [supplierId], references: [id])
+  employee        Employee      @relation(fields: [employeeId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  reviewed        Boolean       @default(false)
+  accepted        Boolean       @default(false)
 }
 
 model Employee {
-  id               String         @id @default(cuid())
-  employee_name    String
-  contactNumber    Int
-  temporaryAddress String
-  permanentAddress String
-  position         Position
-  joinDate         DateTime
-  terminationDate  DateTime?
-  expenses         ExpensesFact[]
-  orders           Order[]
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  isActive         Boolean        @default(true)
+  id                     String    @id @default(cuid())
+  name                   String
+  contactNumber          String?
+  temporaryAddress       String?
+  permanentAddress       String?
+  position               Position
+  joinDate               DateTime
+  companyRentalProvision Boolean?
+  terminationDate        DateTime  @default("2100-12-31T23:59:59Z")
+  expenses               Expense[]
+  orders                 Order[]
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  isActive               Boolean   @default(true)
 }
 
 model Credit {
-  id          String         @id @default(cuid())
-  itemID      String
-  supplierID  String
-  amount      Float
-  credit_date DateTime
-  supplier    SupplierMaster @relation(fields: [supplierID], references: [id])
-  item        ItemMaster     @relation(fields: [itemID], references: [id])
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  isActive    Boolean        @default(true)
+  id         String   @id @default(cuid())
+  itemId     String
+  supplierId String
+  amount     Float
+  creditDate DateTime
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+  item       Item     @relation(fields: [itemId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isActive   Boolean  @default(true)
 }
 
 model Customer {
   id            String    @id @default(cuid())
   name          String
-  email         String    @unique
-  phoneNumber   Int       @unique
+  email         String?   @unique
+  phoneNumber   String?   @unique
   dob           DateTime?
-  lastVisitDate DateTime
+  lastVisitDate DateTime? @default(now())
   orders        Order[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -215,27 +238,29 @@ model OrderItem {
 }
 
 model MenuItem {
-  id          String            @id @default(cuid())
+  id          String                @id @default(cuid())
   name        String
   price       Float
   category    String
-  ingredients MenuItemProduct[]
+  subcategory String?
+  ingredients MenuItemIngredients[]
   orderItems  OrderItem[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  isActive    Boolean           @default(true)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  isActive    Boolean               @default(true)
 }
 
-model MenuItemProduct {
-  id         String     @id @default(cuid())
+// suppose menu item momo ho vane momo k k tatwa le bancha vanne kura.
+model MenuItemIngredients {
+  id         String   @id @default(cuid())
   menuItemId String
   productId  String
   quantity   Int
-  menuItem   MenuItem   @relation(fields: [menuItemId], references: [id])
-  product    ItemMaster @relation(fields: [productId], references: [id])
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  isActive   Boolean    @default(true)
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  product    Item     @relation(fields: [productId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isActive   Boolean  @default(true)
 }
 
 model Revenue {
