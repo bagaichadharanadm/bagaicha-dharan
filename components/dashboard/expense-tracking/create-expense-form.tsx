@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { CreateExpenseSchema, CreateExpensesSchema } from '@/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PaymentStatus as PaymentStatusEnum, PaymentType as PaymentTypeEnum } from '@prisma/client';
-import { CalendarIcon } from '@radix-ui/react-icons';
+import { CalendarIcon, TrashIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { useTransition } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
@@ -70,7 +70,7 @@ export function CreateExpenseForm() {
 
   const FormTableCell = ({ children }: { children: React.ReactNode }) => {
     return (
-      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+      <TableCell className="px-2 py-1 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
         {children}
       </TableCell>
     );
@@ -84,7 +84,7 @@ export function CreateExpenseForm() {
             <Table className="min-w-full bg-white border border-gray-300">
               <TableHeader>
                 <TableRow className="bg-gray-200">
-                  {['Date', 'Supplier', 'Item', 'Quantity', 'Amount', 'Invoice', 'Method', 'Status'].map(
+                  {['Date', 'Supplier', 'Item', 'Quantity', 'Amount', 'Invoice', 'Method', 'Status', 'Actions'].map(
                     (header, index) => {
                       return (
                         <TableHead
@@ -99,20 +99,45 @@ export function CreateExpenseForm() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {form.watch('records').map((row, index) => {
-                  return (
-                    <TableRow key={index}>
-                      <FormTableCell>{formatDate(row.tranDate)}</FormTableCell>
-                      <FormTableCell>{row.supplierId}</FormTableCell>
-                      <FormTableCell>{row.itemId}</FormTableCell>
-                      <FormTableCell>{row.quantity}</FormTableCell>
-                      <FormTableCell>{row.amount}</FormTableCell>
-                      <FormTableCell>{row.invoice}</FormTableCell>
-                      <FormTableCell>{row.paymentType}</FormTableCell>
-                      <FormTableCell>{row.paymentStatus}</FormTableCell>
-                    </TableRow>
-                  );
-                })}
+                {form.watch('records').map((row, index) => (
+                  <TableRow key={index} className={index % 2 === 0 ? 'bg-slate-300' : 'bg-slate-400'}>
+                    {[
+                      { content: formatDate(row.tranDate) },
+                      { content: row.supplierId },
+                      { content: row.itemId },
+                      { content: row.quantity },
+                      { content: row.amount },
+                      { content: row.invoice },
+                      { content: row.paymentType },
+                      { content: row.paymentStatus },
+                      {
+                        content: (
+                          <Button
+                            variant={'destructive'}
+                            className="flex gap-4 justify-center items-center w-full"
+                            onClick={() => {
+                              startTransition(() => {
+                                formArray.remove(index);
+                              });
+                            }}
+                          >
+                            <span>delete</span>
+                            <TrashIcon />
+                          </Button>
+                        ),
+                      },
+                    ].map((cell, i) => (
+                      <TableCell
+                        key={i}
+                        className={`px-2 py-1 whitespace-nowrap text-sm text-slate-950 text-center border border-gray-200 ${
+                          i === 8 ? '' : 'text-center'
+                        }`}
+                      >
+                        {cell.content}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
                 <TableRow>
                   <FormTableCell>
                     <FormField
@@ -199,7 +224,7 @@ export function CreateExpenseForm() {
                           <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue className="w-full">
+                                <SelectValue>
                                   {[
                                     { id: 'id-1', name: 'Name 1' },
                                     { id: 'id-2', name: 'Name 2' },
@@ -343,21 +368,36 @@ export function CreateExpenseForm() {
                       )}
                     />
                   </FormTableCell>
+                  <FormTableCell>
+                    <Button
+                      type="button"
+                      variant={'outline'}
+                      className="w-full bg-emerald-500 text-white"
+                      onClick={() => {
+                        append();
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </FormTableCell>
                 </TableRow>
               </TableBody>
               <TableFooter></TableFooter>
             </Table>
-            <div className="flex gap-6  justify-end w-full">
+            <div className="flex gap-6  justify-start w-full">
               <Button
                 type="button"
-                variant={'outline'}
+                variant={'destructive'}
+                disabled={form.watch('records').length === 0 || isPending}
                 onClick={() => {
-                  append();
+                  startTransition(() => {
+                    formArray.remove();
+                  });
                 }}
               >
-                Add
+                Delete All
               </Button>
-              <Button type="submit" disabled={form.watch('records').length === 0 || isPending}>
+              <Button type="submit" variant={'default'} disabled={form.watch('records').length === 0 || isPending}>
                 Save
               </Button>
             </div>
@@ -374,8 +414,15 @@ export function CreateExpenseForm() {
   };
 
   return (
-    <div className="space-y-8">
-      <ExpenseLogForm />
+    <div className="space-y-6 p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-semibold text-center text-gray-800">Add Your Expenses</h1>
+      <p className="text-gray-600 text-center">
+        Click &quot;Add&quot; to include a new expense item. When you&apos;re finished, click &quot;Save&quot; to save
+        all your expenses.
+      </p>
+      <div className="mt-4">
+        <ExpenseLogForm />
+      </div>
     </div>
   );
 }
