@@ -18,7 +18,8 @@ export type ExpenseTableProps = {
   showHeader?: boolean;
 };
 
-export type CrateExpenseFormProps = {
+export type CreateEmployeeExpenseFormProps = {
   suppliers: { id: string; name: string }[];
   items: { id: string; name: string }[];
+  employees: { id: string; name: string }[];
 };

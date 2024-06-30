@@ -1,7 +1,7 @@
 import { PaymentStatus as PaymentStatusEnum, PaymentType as paymentTypeEnum } from '@prisma/client';
 import { z } from 'zod';
 
-export const CreateExpenseSchema = z.object({
+export const CreateEmployeeExpenseSchema = z.object({
   tranDate: z.date(),
   itemId: z.string(),
   supplierId: z.string(),
@@ -15,4 +15,7 @@ export const CreateExpenseSchema = z.object({
   comment: z.string().optional(),
 });
 
-export const CreateExpensesSchema = z.object({ records: z.array(CreateExpenseSchema) });
+export const CreateEmployeExpensesSchema = z.object({
+  employeeId: z.string(),
+  records: z.array(CreateEmployeeExpenseSchema),
+});

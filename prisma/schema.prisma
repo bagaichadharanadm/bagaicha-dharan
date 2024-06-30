@@ -120,8 +120,6 @@ model Item {
   standardUOM         String
   comments            String?
   expense             Expense[] // One-to-many: one product can have multiple expenses records
-  supplier            Supplier[] // One-to-many: one product can have multiple suppliers
-  menuItems           MenuItem[]
   credit              Credit[]
   itemCategory        ItemCategory          @default(KITCHEN)
   createdAt           DateTime              @default(now())
@@ -145,8 +143,6 @@ model Supplier {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   isActive              Boolean   @default(true)
-  Item                  Item?     @relation(fields: [itemId], references: [id])
-  itemId                String?
 }
 
 // Main table for expense staff expense tracking.
@@ -171,19 +167,20 @@ model Expense {
 }
 
 model Employee {
-  id               String    @id @default(cuid())
-  name             String
-  contactNumber    String?
-  temporaryAddress String?
-  permanentAddress String?
-  position         Position
-  joinDate         DateTime
-  terminationDate  DateTime  @default("2100-12-31T23:59:59Z")
-  expenses         Expense[]
-  orders           Order[]
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  isActive         Boolean   @default(true)
+  id                     String    @id @default(cuid())
+  name                   String
+  contactNumber          String?
+  temporaryAddress       String?
+  permanentAddress       String?
+  position               Position
+  joinDate               DateTime
+  companyRentalProvision Boolean?
+  terminationDate        DateTime  @default("2100-12-31T23:59:59Z")
+  expenses               Expense[]
+  orders                 Order[]
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  isActive               Boolean   @default(true)
 }
 
 model Credit {
@@ -250,8 +247,6 @@ model MenuItem {
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt
   isActive    Boolean               @default(true)
-  Item        Item?                 @relation(fields: [itemId], references: [id])
-  itemId      String?
 }
 
 // suppose menu item momo ho vane momo k k tatwa le bancha vanne kura.

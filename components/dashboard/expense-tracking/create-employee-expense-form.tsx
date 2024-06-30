@@ -3,15 +3,15 @@
 import { expenseTrackingActions } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
-import { CreateExpenseSchema, CreateExpensesSchema } from '@/schemas';
-import { CrateExpenseFormProps } from '@/types/props';
+import { CreateEmployeExpensesSchema, CreateEmployeeExpenseSchema } from '@/schemas';
+import { CreateEmployeeExpenseFormProps } from '@/types/props';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PaymentStatus as PaymentStatusEnum, PaymentType as PaymentTypeEnum } from '@prisma/client';
 import { CalendarIcon, TrashIcon } from '@radix-ui/react-icons';
@@ -20,16 +20,16 @@ import { useTransition } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-export function CreateExpenseForm({ items, suppliers }: CrateExpenseFormProps) {
+export function CreateEmployeeExpenseForm({ items, suppliers, employees }: CreateEmployeeExpenseFormProps) {
   const [isPending, startTransition] = useTransition();
 
-  const inputForm = useForm<z.infer<typeof CreateExpenseSchema>>({
-    resolver: zodResolver(CreateExpenseSchema),
+  const inputForm = useForm<z.infer<typeof CreateEmployeeExpenseSchema>>({
+    resolver: zodResolver(CreateEmployeeExpenseSchema),
     defaultValues: {
       tranDate: new Date(),
       itemId: items[0].id,
       supplierId: suppliers[0].id,
-      employeeId: '',
+      employeeId: employees[0].id,
       quantity: 1,
       amount: 1,
       invoice: 1,
@@ -40,21 +40,20 @@ export function CreateExpenseForm({ items, suppliers }: CrateExpenseFormProps) {
     },
   });
 
-  const form = useForm<z.infer<typeof CreateExpensesSchema>>({
-    resolver: zodResolver(CreateExpensesSchema),
-    defaultValues: { records: [] },
+  const form = useForm<z.infer<typeof CreateEmployeExpensesSchema>>({
+    resolver: zodResolver(CreateEmployeExpensesSchema),
+    defaultValues: { employeeId: employees[0].id, records: [] },
   });
 
   const formArray = useFieldArray({ name: 'records', control: form.control });
 
   const append = () => {
     startTransition(() => {
-      console.log(formArray.fields);
       formArray.append({
         tranDate: inputForm.watch('tranDate'),
         itemId: inputForm.watch('itemId'),
         supplierId: inputForm.watch('supplierId'),
-        employeeId: inputForm.watch('employeeId'),
+        employeeId: form.watch('employeeId'),
         quantity: inputForm.watch('quantity'),
         amount: inputForm.watch('amount'),
         invoice: inputForm.watch('invoice'),
@@ -79,24 +78,59 @@ export function CreateExpenseForm({ items, suppliers }: CrateExpenseFormProps) {
 
   const ExpenseLogForm = () => {
     return (
-      <Form {...inputForm}>
+      <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-4 items-end">
+            <FormField
+              control={form.control}
+              name="employeeId"
+              render={({ field }) => (
+                <FormItem>
+                  <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue>
+                          {employees.find((employee) => employee.id === field.value)?.name || 'select employee'}
+                        </SelectValue>
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {employees.map((employee, index) => (
+                        <SelectItem key={index} value={employee.id}>
+                          {employee.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Table className="min-w-full bg-white border border-gray-300">
               <TableHeader>
                 <TableRow className="bg-gray-200">
-                  {['Date', 'Supplier', 'Item', 'Quantity', 'Amount', 'Invoice', 'Method', 'Status', 'Actions'].map(
-                    (header, index) => {
-                      return (
-                        <TableHead
-                          key={index}
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300"
-                        >
-                          {header}
-                        </TableHead>
-                      );
-                    },
-                  )}
+                  {[
+                    'Date',
+                    'Supplier',
+                    'Item',
+                    'Quantity',
+                    'Amount',
+                    'Invoice',
+                    'Method',
+                    'Status',
+                    'Comments',
+                    'Actions',
+                  ].map((header, index) => {
+                    return (
+                      <TableHead
+                        key={index}
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300"
+                      >
+                        {header}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -111,6 +145,7 @@ export function CreateExpenseForm({ items, suppliers }: CrateExpenseFormProps) {
                       { content: row.invoice },
                       { content: row.paymentType },
                       { content: row.paymentStatus },
+                      { content: row.comment },
                       {
                         content: (
                           <Button
@@ -288,6 +323,7 @@ export function CreateExpenseForm({ items, suppliers }: CrateExpenseFormProps) {
                               onChange={(event) => field.onChange(+event.target.value)}
                               min="1"
                               className="w-[100px]"
+                              autoComplete="off"
                             />
                           </FormControl>
                           <FormMessage />
@@ -346,6 +382,21 @@ export function CreateExpenseForm({ items, suppliers }: CrateExpenseFormProps) {
                     />
                   </FormTableCell>
                   <FormTableCell>
+                    <FormField
+                      control={inputForm.control}
+                      name="comment"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="optional" {...field} autoComplete="off" />
+                          </FormControl>
+
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </FormTableCell>
+                  <FormTableCell>
                     <Button
                       type="button"
                       variant={'outline'}
@@ -384,7 +435,7 @@ export function CreateExpenseForm({ items, suppliers }: CrateExpenseFormProps) {
     );
   };
 
-  const onSubmit: SubmitHandler<z.infer<typeof CreateExpensesSchema>> = (formData) => {
+  const onSubmit: SubmitHandler<z.infer<typeof CreateEmployeExpensesSchema>> = (formData) => {
     startTransition(() => {
       expenseTrackingActions.CreateExpense(formData);
     });
