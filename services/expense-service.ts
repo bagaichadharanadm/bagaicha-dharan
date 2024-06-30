@@ -1,5 +1,6 @@
 import prisma from '@/db';
 import { CreateEmployeeExpensesSchema } from '@/schemas';
+import { Expense } from '@prisma/client';
 import { z } from 'zod';
 
 /**
@@ -44,4 +45,69 @@ export async function createExpenses(data: z.infer<typeof CreateEmployeeExpenses
       comments: record.comment,
     })),
   });
+}
+
+/**
+ * Retrieves all unreviewed expenses ordered by creation date descending.
+ *
+ * @returns {Promise<Expense[]>} - A promise that resolves with an array of unreviewed expenses.
+ */
+export async function getUnreviewedExpenses(): Promise<Expense[]> {
+  const unreviewedExpenses = await prisma.expense.findMany({
+    where: { reviewed: false },
+    orderBy: { createdAt: 'desc' },
+  });
+  return unreviewedExpenses;
+}
+
+/**
+ * Accepts all expenses by marking them as reviewed.
+ *
+ * @returns {Promise<void>} - A promise that resolves when all expenses are marked as reviewed.
+ */
+export async function acceptAllExpenses(): Promise<void> {
+  await prisma.expense.updateMany({
+    where: { reviewed: false },
+    data: { reviewed: true },
+  });
+}
+
+/**
+ * Rejects all expenses by marking them as reviewed and not accepted.
+ *
+ * @returns {Promise<void>} - A promise that resolves when all expenses are marked as reviewed and not accepted.
+ */
+export async function rejectAllExpenses(): Promise<void> {
+  await prisma.expense.updateMany({
+    where: { reviewed: false },
+    data: { reviewed: true, accepted: false },
+  });
+}
+
+/**
+ * Accepts an expense by its ID, marking it as reviewed and accepted.
+ *
+ * @param {string} expenseId - The ID of the expense to accept.
+ * @returns {Promise<Expense | null>} - A promise that resolves with the accepted expense if found, otherwise null.
+ */
+export async function acceptExpenseById(expenseId: string): Promise<Expense | null> {
+  const expense = await prisma.expense.update({
+    where: { id: expenseId },
+    data: { reviewed: true, accepted: true },
+  });
+  return expense;
+}
+
+/**
+ * Rejects an expense by its ID, marking it as reviewed but not accepted.
+ *
+ * @param {string} expenseId - The ID of the expense to reject.
+ * @returns {Promise<Expense | null>} - A promise that resolves with the rejected expense if found, otherwise null.
+ */
+export async function rejectExpenseById(expenseId: string): Promise<Expense | null> {
+  const expense = await prisma.expense.update({
+    where: { id: expenseId },
+    data: { reviewed: true, accepted: false },
+  });
+  return expense;
 }
