@@ -46,7 +46,6 @@ export async function createExpenses(data: z.infer<typeof CreateEmployeeExpenses
     })),
   });
 }
-
 /**
  * Retrieves all unreviewed expenses ordered by creation date descending.
  *
