@@ -13,7 +13,7 @@ import { EditEmployeeExpensesSchema } from '@/schemas';
 import { EditEmployeeExpenseFormProps } from '@/types/props';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PaymentStatus as PaymentStatusEnum, PaymentType as PaymentTypeEnum } from '@prisma/client';
-import { CalendarIcon, CheckCircledIcon, Cross1Icon } from '@radix-ui/react-icons';
+import { CalendarIcon, CheckCircledIcon, Cross1Icon, PlusCircledIcon, TrashIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { useTransition } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
@@ -390,17 +390,30 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                   <TableRow>
                     <TableCell
                       colSpan={6}
-                      className="text-sm font-medium text-gray-800 uppercase tracking-wider border border-gray-300"
+                      className="text-sm font-medium text-gray-800 uppercase tracking-wider border border-gray-300 "
                     >
-                      <Button onClick={rejectAll} className="inline-flex">
-                        Reject all
-                      </Button>
-                      <Button onClick={acceptAll} className="inline-flex">
-                        Accept all
-                      </Button>
-                      <Button type="submit" className="inline-flex">
-                        Save
-                      </Button>
+                      <div className=" flex flex-row gap-3">
+                        <Button
+                          onClick={rejectAll}
+                          type="button"
+                          className="flex justify-center items-center gap-2"
+                          variant="destructive"
+                        >
+                          <span>Reject all</span> <TrashIcon />
+                        </Button>
+                        <Button
+                          onClick={acceptAll}
+                          type="button"
+                          className="flex justify-center items-center gap-2"
+                          variant="outline"
+                        >
+                          <span> Accept all</span>
+                          <CheckCircledIcon />
+                        </Button>
+                        <Button type="submit" className="inline-flex">
+                          Save
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 </TableFooter>
