@@ -2,7 +2,7 @@
 
 import { auth } from '@/auth';
 import prisma from '@/db';
-import { CreateEmployeeExpensesSchema } from '@/schemas';
+import { CreateEmployeeExpensesSchema, EditEmployeeExpensesSchema } from '@/schemas';
 import { expenseServices } from '@/services';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -37,4 +37,8 @@ export async function CreateExpense(
   revalidatePath('/dashboard/expense-tracking/view');
   revalidatePath('/dashboard/expense-tracking/edit');
   return { success: { message: 'Expenses added successfully.' } };
+}
+
+export async function EditExpense(formData: z.infer<typeof EditEmployeeExpensesSchema>) {
+  console.log(formData);
 }

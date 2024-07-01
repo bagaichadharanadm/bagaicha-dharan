@@ -1,6 +1,6 @@
 import prisma from '@/db';
 import { CreateEmployeeExpensesSchema } from '@/schemas';
-import { Expense } from '@prisma/client';
+import { Employee, Expense, Item, Prisma, Supplier } from '@prisma/client';
 import { z } from 'zod';
 
 /**
