@@ -171,3 +171,57 @@ export async function updateExpenses(data: z.infer<typeof EditEmployeeExpensesSc
 
   return updatedExpenses;
 }
+
+export async function getDailyExpenses(tranDate: string) {
+  const dailyExpenses = await prisma.$queryRaw`
+    select
+  expense."id" as "id",
+  expense."transactionDate" as "tranDate",
+  expense."supplierId" as "supplierId",
+  supplier."supplierName" as "supplierName",
+  expense."employeeId" as "employeeId",
+  employee."name" as "employeeName",
+  expense."itemId" as "itemId",
+  item."itemDesc" as "itemName",
+  expense.quantity as "quantity",
+  expense.amount as "amount",
+  expense.invoice as "invoice",
+  expense."paymentType" as "paymentType",
+  expense."paymentStatus" as "paymentStatus",
+  expense."comments" as "comments",
+  expense."createdAt" as "createdAt",
+  case
+    when expense.reviewed then 
+    case when expense.accepted then 'APPROVED'
+    else 'REJECTED' end
+    else 'NOT REVIEWED'
+  end as "status"
+from
+  "Expense" as expense
+  inner join "Supplier" as supplier on expense."supplierId" = supplier.id
+  inner join "Item" as item on expense."itemId" = item.id
+  inner join "Employee" as employee on expense."employeeId" = employee.id
+where
+  to_char(expense."transactionDate", 'YYYYMMDD') = ${tranDate}
+  order by expense."updatedAt" desc
+  `;
+  // Define the return type inline
+  return dailyExpenses as {
+    id: string;
+    tranDate: Date;
+    supplierId: string;
+    supplierName: string;
+    employeeId: string;
+    employeeName: string;
+    itemId: string;
+    itemName: string;
+    quantity: number;
+    amount: number;
+    invoice: number;
+    paymentType: string;
+    paymentStatus: string;
+    comment: string | null;
+    createdAt: Date;
+    status: string;
+  }[];
+}
