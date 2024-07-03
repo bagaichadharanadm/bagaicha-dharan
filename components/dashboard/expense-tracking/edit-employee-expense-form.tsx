@@ -13,15 +13,28 @@ import { EditEmployeeExpensesSchema } from '@/schemas';
 import { EditEmployeeExpenseFormProps } from '@/types/props';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PaymentStatus as PaymentStatusEnum, PaymentType as PaymentTypeEnum } from '@prisma/client';
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { CalendarIcon, CheckCircledIcon, Cross1Icon, PlusCircledIcon, TrashIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees }: EditEmployeeExpenseFormProps) {
   const [isPending, startTransition] = useTransition();
-
+  const [formResponse, setFormResponse] = useState<
+    | {
+        success?: {
+          message: string;
+        };
+      }
+    | {
+        error?: {
+          message: string;
+        };
+      }
+    | undefined
+  >(undefined);
   const form = useForm<z.infer<typeof EditEmployeeExpensesSchema>>({
     resolver: zodResolver(EditEmployeeExpensesSchema),
     defaultValues: {
@@ -49,7 +62,20 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
 
   const onSubmit: SubmitHandler<z.infer<typeof EditEmployeeExpensesSchema>> = (formData) => {
     startTransition(() => {
-      expenseTrackingActions.EditExpense(formData);
+      expenseTrackingActions
+        .EditExpense(formData)
+        .then((data) => {
+          setFormResponse(data);
+        })
+        .then(() => {
+          form.reset();
+          form.reset();
+        })
+        .then(() => {
+          setTimeout(() => {
+            setFormResponse(undefined); // Clearing formResponse after 3 seconds
+          }, 2000); // Timeout set to 3 seconds (3000 milliseconds)
+        });
     });
   };
 
@@ -122,7 +148,7 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                                     <Button
                                       variant="outline"
                                       className={cn(
-                                        'w-full pl-3 text-left font-normal bg-gray-100',
+                                        'w-full pl-3 text-left font-normal bg-gray-100 gap-3',
                                         !field.value && 'text-muted-foreground',
                                       )}
                                     >
@@ -389,7 +415,7 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                 <TableFooter>
                   <TableRow>
                     <TableCell
-                      colSpan={6}
+                      colSpan={10}
                       className="text-sm font-medium text-gray-800 uppercase tracking-wider border border-gray-300 "
                     >
                       <div className=" flex flex-row gap-3">
@@ -418,6 +444,21 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                   </TableRow>
                 </TableFooter>
               </Table>
+              <div className="w-full flex justify-center items-center">
+                {formResponse && 'success' in formResponse && (
+                  <FormMessage className="bg-green-100 border border-green-300 shadow-md text-green-800 text-xs flex justify-center items-center py-1 px-2 rounded-md gap-2 min-w-[180px]">
+                    <CheckCircledIcon className="text-green-500 h-4 w-4" />
+                    <span>{formResponse.success?.message}</span>
+                  </FormMessage>
+                )}
+
+                {formResponse && 'error' in formResponse && (
+                  <FormMessage className="bg-red-100 border border-red-300 shadow-md text-red-800 text-xs flex justify-center items-center py-1 px-2 rounded-md gap-2 min-w-[180px]">
+                    <ExclamationTriangleIcon className="text-red-500 h-4 w-4" />
+                    <span>{formResponse.error?.message}</span>
+                  </FormMessage>
+                )}
+              </div>
             </div>
           </form>
         </Form>

@@ -2,7 +2,7 @@
 
 import { auth } from '@/auth';
 import prisma from '@/db';
-import { CreateEmployeeExpensesSchema, EditEmployeeExpensesSchema } from '@/schemas';
+import { CreateEmployeeExpensesSchema, EditEmployeeExpenseSchema, EditEmployeeExpensesSchema } from '@/schemas';
 import { expenseServices } from '@/services';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -39,6 +39,30 @@ export async function CreateExpense(
   return { success: { message: 'Expenses added successfully.' } };
 }
 
-export async function EditExpense(formData: z.infer<typeof EditEmployeeExpensesSchema>) {
+/**
+ * Handles the update of multiple expense records based on the provided form data.
+ *
+ * @param {z.infer<typeof EditEmployeeExpensesSchema>} formData - The form data to update expense records.
+ * @returns {Promise<{ success?: { message: string } } | { error?: { message: string } }>} - Success message or error message.
+ */
+export async function EditExpense(
+  formData: z.infer<typeof EditEmployeeExpensesSchema>,
+): Promise<{ success?: { message: string } } | { error?: { message: string } }> {
   console.log(formData);
+
+  // Validate input fields using the schema
+  const validatedFields = EditEmployeeExpensesSchema.safeParse(formData);
+
+  // Check if validation succeeded
+  if (!validatedFields.success) {
+    return { error: { message: 'Invalid fields provided' } };
+  }
+
+  // Attempt to update expenses
+  const updatedExpenses = await expenseServices.updateExpenses(validatedFields.data);
+
+  // Revalidate paths to ensure updated data is displayed
+  revalidatePath('/dashboard/expense-tracking/edit');
+  revalidatePath('/dashboard/expense-tracking/view');
+  return { success: { message: 'Records updated successfully.' } };
 }

@@ -1,6 +1,8 @@
 import prisma from '@/db';
 import { CreateEmployeeExpensesSchema } from '@/schemas';
+import { EditEmployeeExpensesSchema } from '@/schemas';
 import { Employee, Expense, Item, Prisma, Supplier } from '@prisma/client';
+import { PaymentStatus as PaymentStatusEnum, PaymentType as PaymentTypeEnum } from '@prisma/client';
 import { z } from 'zod';
 
 /**
@@ -109,4 +111,63 @@ export async function rejectExpenseById(expenseId: string): Promise<Expense | nu
     data: { reviewed: true, accepted: false },
   });
   return expense;
+}
+
+/**
+ * Updates multiple expense records in the database.
+ *
+ * @param {z.infer<typeof EditEmployeeExpensesSchema>} data - The data for updating expenses.
+ * @returns {Promise<Expense[]>} - A promise that resolves with the updated expenses.
+ *
+ * @example
+ * const data = {
+ *   records: [
+ *     {
+ *       id: 'expense1',
+ *       tranDate: new Date(),
+ *       itemId: 'newItemId',
+ *       supplierId: 'newSupplierId',
+ *       employeeId: 'newEmployeeId',
+ *       quantity: 5,
+ *       amount: 150,
+ *       invoice: 56789,
+ *       paymentType: 'CASH',
+ *       paymentStatus: 'PAID',
+ *       comment: 'Updated comment',
+ *       reviewed: true,
+ *       accepted: true,
+ *       createdAt: new Date(),
+ *       updatedAt: new Date(),
+ *     },
+ *     // additional records
+ *   ],
+ * };
+ * const updatedExpenses = await updateExpenses(data);
+ */
+export async function updateExpenses(data: z.infer<typeof EditEmployeeExpensesSchema>): Promise<Expense[]> {
+  const updatedExpenses = await prisma.$transaction(
+    data.records.map((record) =>
+      prisma.expense.update({
+        where: { id: record.id },
+        data: {
+          transactionDate: record.tranDate,
+          itemId: record.itemId,
+          supplierId: record.supplierId,
+          employeeId: record.employeeId,
+          quantity: record.quantity,
+          amount: record.amount,
+          invoice: record.invoice,
+          paymentType: record.paymentType as PaymentTypeEnum,
+          paymentStatus: record.paymentStatus as PaymentStatusEnum,
+          comments: record.comment,
+          reviewed: record.reviewed ?? false,
+          accepted: record.accepted ?? false,
+          createdAt: record.createdAt,
+          updatedAt: record.updatedAt,
+        },
+      }),
+    ),
+  );
+
+  return updatedExpenses;
 }
