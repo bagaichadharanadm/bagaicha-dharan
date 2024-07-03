@@ -1,124 +1,57 @@
-'use client';
-
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { formatDate } from '@/lib/format-date';
 import { ExpenseTableProps } from '@/types/props';
 
-export function ExpenseTable({ data, showHeader = true }: ExpenseTableProps) {
-  // Separate rows with empty id and other rows
-  const rowsWithEmptyId = data.filter((expense) => expense.id === '');
-  const otherRows = data.filter((expense) => expense.id !== '');
-
+export function ExpenseTable({ data }: ExpenseTableProps) {
   return (
-    <div className="overflow-x-auto">
-      <Table className="min-w-full bg-white border border-gray-300">
-        {showHeader && (
-          <TableHeader>
-            <TableRow className="bg-gray-200">
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                Date
-              </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                Supplier
-              </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                Employee
-              </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                Item
-              </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                Quantity
-              </TableHead>
-              <TableHead className="px-6 py-3 text-right text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                Amount
-              </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                Invoice
-              </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                Method
-              </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                Status
-              </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300">
-                Comment
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-        )}
+    <div className="flex flex-col items-end gap-4">
+      <div>Expenses for {formatDate(data[0].tranDate)}</div>
+      <Table>
+        <TableCaption>A list of your recent invoices.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">Employee</TableHead>
+            <TableHead>Supplier</TableHead>
+            <TableHead>Item</TableHead>
+            <TableHead>Payment Type</TableHead>
+            <TableHead>Payment Status</TableHead>
+            <TableHead>Quantity</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Invoice</TableHead>
+            <TableHead>Comment</TableHead>
+            <TableHead>Created At</TableHead>
+            <TableHead>Status</TableHead>
+          </TableRow>
+        </TableHeader>
         <TableBody>
-          {rowsWithEmptyId.map((expense, index) => (
-            <TableRow key={index} className="bg-green-100">
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border border-gray-300">
-                {formatDate(expense.tranDate)}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.supplierName}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.employeeName}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.itemName}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.quantity}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right border border-gray-300">
-                {expense.amount}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.invoice}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.paymentType}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.paymentStatus}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.comment}
-              </TableCell>
-            </TableRow>
-          ))}
-          {otherRows.map((expense, index) => (
-            <TableRow key={index + rowsWithEmptyId.length} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border border-gray-300">
-                {formatDate(expense.tranDate)}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.supplierName}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.employeeName}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.itemName}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.quantity}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right border border-gray-300">
-                {expense.amount}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.invoice}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.paymentType}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.paymentStatus}
-              </TableCell>
-              <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                {expense.comment}
-              </TableCell>
+          {data.map((expense) => (
+            <TableRow key={expense.id}>
+              <TableCell className="font-medium">{expense.employeeName}</TableCell>
+              <TableCell>{expense.supplierName}</TableCell>
+              <TableCell>{expense.itemName}</TableCell>
+              <TableCell>{expense.paymentType}</TableCell>
+              <TableCell>{expense.paymentStatus}</TableCell>
+              <TableCell>{expense.quantity}</TableCell>
+              <TableCell>{expense.amount}</TableCell>
+              <TableCell>{expense.invoice}</TableCell>
+              <TableCell>{expense.comment}</TableCell>
+              <TableCell>{formatDate(expense.createdAt)}</TableCell>
+              <TableCell>{expense.status}</TableCell>
             </TableRow>
           ))}
         </TableBody>
-        <TableFooter></TableFooter>
+        <TableFooter>
+          <TableRow></TableRow>
+        </TableFooter>
       </Table>
     </div>
   );

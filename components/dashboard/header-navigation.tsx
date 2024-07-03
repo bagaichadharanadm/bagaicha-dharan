@@ -29,7 +29,7 @@ const navData = [
       },
       {
         title: 'View Daily Bills',
-        href: '/dashboard/bill/daily',
+        href: '/dashboard/bill/view',
         description: 'Display a list of bills generated on a specific day.',
       },
     ],
@@ -49,7 +49,7 @@ const navData = [
       },
       {
         title: 'View daily expense',
-        href: '/dashboard/expense-tracking/daily',
+        href: '/dashboard/expense-tracking/view',
         description: 'Display a list of expenses incurred on a specific day.',
       },
       {

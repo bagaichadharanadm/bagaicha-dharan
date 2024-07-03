@@ -1,3 +1,5 @@
+import { Expense } from '@prisma/client';
+
 export type ExpenseTableProps = {
   data: {
     id: string;
@@ -13,12 +15,21 @@ export type ExpenseTableProps = {
     invoice: number;
     paymentType: string;
     paymentStatus: string;
-    comment: string;
+    comment: string | null;
+    createdAt: Date;
+    status: string;
   }[];
   showHeader?: boolean;
 };
 
 export type CreateEmployeeExpenseFormProps = {
+  suppliers: { id: string; name: string }[];
+  items: { id: string; name: string }[];
+  employees: { id: string; name: string }[];
+};
+
+export type EditEmployeeExpenseFormProps = {
+  expenses: Expense[];
   suppliers: { id: string; name: string }[];
   items: { id: string; name: string }[];
   employees: { id: string; name: string }[];
