@@ -119,7 +119,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                       </SelectTrigger>
                     </FormControl>
                     <FormDescription>
-                      Expense will be recorded <br /> underselected employee.
+                      Expense will be recorded <br /> under selected employee.
                     </FormDescription>
 
                     <SelectContent>
@@ -138,27 +138,18 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
             <Table className="min-w-full bg-white border border-gray-300">
               <TableHeader>
                 <TableRow className="bg-gray-200">
-                  {[
-                    'Date',
-                    'Supplier',
-                    'Item',
-                    'Quantity',
-                    'Amount',
-                    'Invoice',
-                    'Method',
-                    'Status',
-                    'Comments',
-                    'Actions',
-                  ].map((header, index) => {
-                    return (
-                      <TableHead
-                        key={index}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300"
-                      >
-                        {header}
-                      </TableHead>
-                    );
-                  })}
+                  {['Date', 'Supplier', 'Item', 'Quantity', 'Amount', 'Invoice', 'Method', 'Comments', 'Actions'].map(
+                    (header, index) => {
+                      return (
+                        <TableHead
+                          key={index}
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300"
+                        >
+                          {header}
+                        </TableHead>
+                      );
+                    },
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -172,7 +163,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                       { content: row.amount },
                       { content: row.invoice },
                       { content: row.paymentType },
-                      { content: row.paymentStatus },
+                      // { content: row.paymentStatus },
                       { content: row.comment },
                       {
                         content: (
@@ -202,7 +193,9 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                     ))}
                   </TableRow>
                 ))}
+                {/* Input form */}
                 <TableRow>
+                  {/* Tran date input */}
                   <FormTableCell>
                     <FormField
                       control={inputForm.control}
@@ -239,6 +232,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                       )}
                     />
                   </FormTableCell>
+                  {/* Supplier dropdown */}
                   <FormTableCell>
                     <div className="pt-2">
                       <FormField
@@ -270,6 +264,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                       />
                     </div>
                   </FormTableCell>
+                  {/* Item dropdown */}
                   <FormTableCell>
                     <div className="pt-2">
                       <FormField
@@ -300,6 +295,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                       />
                     </div>
                   </FormTableCell>
+                  {/* Quantity Input */}
                   <FormTableCell>
                     <FormField
                       control={inputForm.control}
@@ -321,6 +317,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                       )}
                     />
                   </FormTableCell>
+                  {/* Amount Input */}
                   <FormTableCell>
                     <FormField
                       control={inputForm.control}
@@ -342,6 +339,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                       )}
                     />
                   </FormTableCell>
+                  {/* Invoice Input */}
                   <FormTableCell>
                     <FormField
                       control={inputForm.control}
@@ -364,7 +362,8 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                       )}
                     />
                   </FormTableCell>
-                  <FormTableCell>
+                  {/*  */}
+                  {/* <FormTableCell>
                     <FormField
                       control={inputForm.control}
                       name="paymentStatus"
@@ -388,7 +387,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                         </FormItem>
                       )}
                     />
-                  </FormTableCell>
+                  </FormTableCell> */}
                   <FormTableCell>
                     <FormField
                       control={inputForm.control}

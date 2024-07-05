@@ -146,27 +146,29 @@ export async function rejectExpenseById(expenseId: string): Promise<Expense | nu
  */
 export async function updateExpenses(data: z.infer<typeof EditEmployeeExpensesSchema>): Promise<Expense[]> {
   const updatedExpenses = await prisma.$transaction(
-    data.records.map((record) =>
-      prisma.expense.update({
-        where: { id: record.id },
-        data: {
-          transactionDate: record.tranDate,
-          itemId: record.itemId,
-          supplierId: record.supplierId,
-          employeeId: record.employeeId,
-          quantity: record.quantity,
-          amount: record.amount,
-          invoice: record.invoice,
-          paymentType: record.paymentType as PaymentTypeEnum,
-          paymentStatus: record.paymentStatus as PaymentStatusEnum,
-          comments: record.comment,
-          reviewed: record.reviewed ?? false,
-          accepted: record.accepted ?? false,
-          createdAt: record.createdAt,
-          updatedAt: record.updatedAt,
-        },
-      }),
-    ),
+    data.records
+      .filter((row) => row.reviewed)
+      .map((record) =>
+        prisma.expense.update({
+          where: { id: record.id },
+          data: {
+            transactionDate: record.tranDate,
+            itemId: record.itemId,
+            supplierId: record.supplierId,
+            employeeId: record.employeeId,
+            quantity: record.quantity,
+            amount: record.amount,
+            invoice: record.invoice,
+            paymentType: record.paymentType as PaymentTypeEnum,
+            paymentStatus: record.paymentStatus as PaymentStatusEnum,
+            comments: record.comment,
+            reviewed: record.reviewed ?? false,
+            accepted: record.accepted ?? false,
+            createdAt: record.createdAt,
+            updatedAt: record.updatedAt,
+          },
+        }),
+      ),
   );
 
   return updatedExpenses;
