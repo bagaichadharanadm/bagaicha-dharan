@@ -72,6 +72,8 @@ export async function EditExpense(
 
 export async function getDailyExpenses(formData: z.infer<typeof DailyExpenseSchema>) {
   const validatedFields = DailyExpenseSchema.safeParse(formData);
+  console.log('here');
+  console.log(validatedFields);
   if (!validatedFields.success) {
     return { error: { message: 'Invalid field proived' } };
   }

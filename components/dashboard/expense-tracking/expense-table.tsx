@@ -114,12 +114,7 @@ export function ExpenseTable({ data }: ExpenseTableProps) {
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue('amount'));
 
-        const formatted = new Intl.NumberFormat('ne-NP', {
-          style: 'currency',
-          currency: 'NPR',
-        }).format(amount);
-
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">Rs.{amount}</div>;
       },
     },
     {
@@ -128,12 +123,7 @@ export function ExpenseTable({ data }: ExpenseTableProps) {
       cell: ({ row }) => {
         const invoice = parseFloat(row.getValue('invoice'));
 
-        const formatted = new Intl.NumberFormat('ne-NP', {
-          style: 'currency',
-          currency: 'NPR',
-        }).format(invoice);
-
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">Rs.{invoice}</div>;
       },
     },
     {

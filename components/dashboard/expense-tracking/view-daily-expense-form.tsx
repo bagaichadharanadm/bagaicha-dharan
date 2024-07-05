@@ -1,24 +1,10 @@
 'use client';
 
 import { expenseTrackingActions } from '@/actions';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { DailyExpenseSchema } from '@/schemas';
 import { DailyExpenseFormProps } from '@/types/props';
@@ -41,10 +27,14 @@ export function DailyExpenseForm({ expenses }: DailyExpenseFormProps) {
     },
   });
 
+  const tmp = form.watch('tranDate');
+  console.log(tmp);
+
   const onSubmit: SubmitHandler<z.infer<typeof DailyExpenseSchema>> = (formData) => {
-    startTransition(() => {
-      expenseTrackingActions.getDailyExpenses(formData);
-    });
+    console.log(formData);
+    // startTransition(() => {
+    //   expenseTrackingActions.getDailyExpenses(formData);
+    // });
   };
 
   return (
