@@ -13,46 +13,43 @@ import { ExpenseTableProps } from '@/types/props';
 
 export function ExpenseTable({ data }: ExpenseTableProps) {
   return (
-    <div className="flex flex-col items-end gap-4">
-      <div>Expenses for {formatDate(data[0].tranDate)}</div>
-      <Table>
-        <TableCaption>A list of your recent invoices.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Employee</TableHead>
-            <TableHead>Supplier</TableHead>
-            <TableHead>Item</TableHead>
-            <TableHead>Payment Type</TableHead>
-            <TableHead>Payment Status</TableHead>
-            <TableHead>Quantity</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Invoice</TableHead>
-            <TableHead>Comment</TableHead>
-            <TableHead>Created At</TableHead>
-            <TableHead>Status</TableHead>
+    <Table>
+      <TableCaption>A list of expenses.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">Employee</TableHead>
+          <TableHead>Supplier</TableHead>
+          <TableHead>Item</TableHead>
+          <TableHead>Payment Type</TableHead>
+          <TableHead>Payment Status</TableHead>
+          <TableHead>Quantity</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Invoice</TableHead>
+          <TableHead>Comment</TableHead>
+          <TableHead>Created At</TableHead>
+          <TableHead>Status</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data.map((expense) => (
+          <TableRow key={expense.id}>
+            <TableCell className="font-medium">{expense.employeeName}</TableCell>
+            <TableCell>{expense.supplierName}</TableCell>
+            <TableCell>{expense.itemName}</TableCell>
+            <TableCell>{expense.paymentType}</TableCell>
+            <TableCell>{expense.paymentStatus}</TableCell>
+            <TableCell>{expense.quantity}</TableCell>
+            <TableCell>{expense.amount}</TableCell>
+            <TableCell>{expense.invoice}</TableCell>
+            <TableCell>{expense.comment}</TableCell>
+            <TableCell>{formatDate(expense.createdAt)}</TableCell>
+            <TableCell>{expense.status}</TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.map((expense) => (
-            <TableRow key={expense.id}>
-              <TableCell className="font-medium">{expense.employeeName}</TableCell>
-              <TableCell>{expense.supplierName}</TableCell>
-              <TableCell>{expense.itemName}</TableCell>
-              <TableCell>{expense.paymentType}</TableCell>
-              <TableCell>{expense.paymentStatus}</TableCell>
-              <TableCell>{expense.quantity}</TableCell>
-              <TableCell>{expense.amount}</TableCell>
-              <TableCell>{expense.invoice}</TableCell>
-              <TableCell>{expense.comment}</TableCell>
-              <TableCell>{formatDate(expense.createdAt)}</TableCell>
-              <TableCell>{expense.status}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow></TableRow>
-        </TableFooter>
-      </Table>
-    </div>
+        ))}
+      </TableBody>
+      <TableFooter>
+        <TableRow></TableRow>
+      </TableFooter>
+    </Table>
   );
 }
