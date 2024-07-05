@@ -488,7 +488,9 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={form.handleSubmit(onSubmit)}>Yes</AlertDialogAction>
+                              <AlertDialogAction onClick={form.handleSubmit(onSubmit)} disabled={isPending}>
+                                Yes
+                              </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>

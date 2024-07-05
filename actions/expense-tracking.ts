@@ -1,13 +1,7 @@
 'use server';
 
-import { auth } from '@/auth';
 import getUserSessionAndRole from '@/lib/get-user-session-and-role';
-import {
-  CreateEmployeeExpensesSchema,
-  EditEmployeeExpenseSchema,
-  EditEmployeeExpensesSchema,
-  ExpenseByDaySchema,
-} from '@/schemas';
+import { CreateEmployeeExpensesSchema, DailyExpenseSchema, EditEmployeeExpensesSchema } from '@/schemas';
 import { expenseServices } from '@/services';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -73,18 +67,14 @@ export async function EditExpense(
   // Revalidate paths to ensure updated data is displayed
   revalidatePath('/dashboard/expense-tracking/edit');
   revalidatePath('/dashboard/expense-tracking/view');
-  redirect('/dashboard/expense-tracking/edit');
+  redirect('/dashboard/expense-tracking');
 }
 
-export async function getExpensesByDay(tranDate: z.infer<typeof ExpenseByDaySchema>) {
-  // const validatedFields = ExpenseByDaySchema.safeParse(tranDate);
-  // if (!validatedFields.success) {
-  //   return { error: { message: validatedFields.error.message } };
-  // }
-  // const dailyExpenses = await expenseServices.getDailyExpenses(validatedFields.data.tranDate);
-  // return { success: { message: 'fetch successful' }, data: dailyExpenses };
-}
-
-export async function redirectBetweenExpensePages(redirectUrl: string) {
-  redirect(redirectUrl);
+export async function getDailyExpenses(formData: z.infer<typeof DailyExpenseSchema>) {
+  const validatedFields = DailyExpenseSchema.safeParse(formData);
+  if (!validatedFields.success) {
+    return { error: { message: 'Invalid field proived' } };
+  }
+  const tranDate: string = formData.tranDate.toISOString().slice(0, 10).replace(/-/g, '');
+  redirect(`/dashboard/expense-tracking/view/${tranDate}`);
 }

@@ -174,7 +174,8 @@ export async function updateExpenses(data: z.infer<typeof EditEmployeeExpensesSc
   return updatedExpenses;
 }
 
-export async function getDailyExpenses({ tranDate, take, skip }: { tranDate: string; take: number; skip: number }) {
+export async function getDailyExpenses({ tranDate }: { tranDate: string; take: number; skip: number }) {
+  console.log(tranDate);
   const dailyExpenses = await prisma.$queryRaw`
     select
       expense."id" as "id",
@@ -207,10 +208,8 @@ export async function getDailyExpenses({ tranDate, take, skip }: { tranDate: str
       to_char(expense."transactionDate", 'YYYYMMDD') = ${tranDate}
     order by
       expense."updatedAt" desc
-    limit ${take}
-    offset ${skip}
   `;
-
+  console.log(dailyExpenses);
   // Define the return type inline
   return dailyExpenses as {
     id: string;
