@@ -73,7 +73,7 @@ export async function EditExpense(
 export async function getDailyExpenses(formData: z.infer<typeof DailyExpenseSchema>) {
   const validatedFields = DailyExpenseSchema.safeParse(formData);
   if (!validatedFields.success) {
-    return { error: { message: 'Invalid field proived' } };
+    return { error: { message: 'Invalid field provided' } };
   }
   const tranDate: string = formData.tranDate.toISOString().slice(0, 10).replace(/-/g, '');
   redirect(`/dashboard/expense-tracking/view/${tranDate}`);
