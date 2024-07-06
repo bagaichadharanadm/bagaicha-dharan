@@ -1,3 +1,5 @@
+import { DevelopmentInProgress } from '@/components/ui/development-in-progress';
+
 export default async function DashboardPage() {
-  return <div>dashboard content</div>;
+  return <DevelopmentInProgress title="Dashboard Landing Page" />;
 }
