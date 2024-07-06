@@ -31,10 +31,9 @@ export function DailyExpenseForm({ expenses }: DailyExpenseFormProps) {
   console.log(tmp);
 
   const onSubmit: SubmitHandler<z.infer<typeof DailyExpenseSchema>> = (formData) => {
-    console.log(formData);
-    // startTransition(() => {
-    //   expenseTrackingActions.getDailyExpenses(formData);
-    // });
+    startTransition(() => {
+      expenseTrackingActions.getDailyExpenses(formData);
+    });
   };
 
   return (
