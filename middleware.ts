@@ -11,7 +11,6 @@ export default auth((req) => {
 
   // Check if the user is logged in
   const isLoggedIn = !!auth;
-
   // Check if the current route is an API authentication route
   const isApiAuthRoute = nextUrl.pathname.startsWith(routes.apiAuthPrefix);
 
@@ -20,6 +19,9 @@ export default auth((req) => {
 
   // Check if the current route is a public route
   const isPublicRoute = routes.publicRoutes.includes(nextUrl.pathname);
+
+  // Check if the current route is an admin route
+  const isAdminRoute = routes.adminRoutes.includes(nextUrl.pathname);
 
   // Do not block access to default Auth JS config route
   if (isApiAuthRoute) {

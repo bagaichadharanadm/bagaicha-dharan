@@ -27,9 +27,6 @@ export function DailyExpenseForm({ expenses }: DailyExpenseFormProps) {
     },
   });
 
-  const tmp = form.watch('tranDate');
-  console.log(tmp);
-
   const onSubmit: SubmitHandler<z.infer<typeof DailyExpenseSchema>> = (formData) => {
     startTransition(() => {
       expenseTrackingActions.getDailyExpenses(formData);

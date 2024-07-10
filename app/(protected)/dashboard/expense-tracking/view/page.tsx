@@ -1,6 +1,8 @@
-import { expenseTrackingActions } from '@/actions';
+import { AdminPage } from '@/components/auth/admin-page';
 import { DailyExpenseForm } from '@/components/dashboard/expense-tracking/view-daily-expense-form';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { expenseServices } from '@/services';
+import { Suspense } from 'react';
 
 export default async function DailyExpensesPage() {
   const expenses = await expenseServices.getDailyExpenses({
@@ -13,8 +15,19 @@ export default async function DailyExpensesPage() {
   }
 
   return (
-    <div>
-      <DailyExpenseForm expenses={expenses} />
-    </div>
+    <Suspense>
+      <AdminPage>
+        <Card>
+          <CardHeader>
+            <CardTitle>Daily Expenses</CardTitle>
+            <CardDescription>A list of your daily expenses</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DailyExpenseForm expenses={expenses} />
+          </CardContent>
+          <CardFooter></CardFooter>
+        </Card>
+      </AdminPage>
+    </Suspense>
   );
 }

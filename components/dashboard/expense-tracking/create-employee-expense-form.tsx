@@ -90,7 +90,6 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
   };
 
   const FormTableCell = ({ children }: { children: React.ReactNode }) => {
-    console.log(formArray.fields);
     return (
       <TableCell className="px-2 py-1 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
         {children}
@@ -483,8 +482,7 @@ export function CreateEmployeeExpenseForm({ items, suppliers, employees }: Creat
                   <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete your account and remove your data from
-                      our servers.
+                      Once expenses have been submitted, they can only be changed by admin.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

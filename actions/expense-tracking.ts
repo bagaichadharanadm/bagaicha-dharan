@@ -12,7 +12,7 @@ export async function CreateExpense(
 ): Promise<{ success?: { message: string } } | { error?: { message: string } }> {
   // Validate input fields using the schema
   const validatedFields = CreateEmployeeExpensesSchema.safeParse(formData);
-  console.log(formData);
+
   // Check if validation succeeded
   if (!validatedFields.success) {
     return { error: { message: 'Validation failed. Please check your input.' } };
@@ -33,8 +33,6 @@ export async function CreateExpense(
         break;
     }
   }
-
-  console.log(validatedFields.data.records);
 
   // Check if user is authenticated
   const user = await getUserSessionAndRole();
@@ -61,9 +59,19 @@ export async function EditExpense(
     return { error: { message: 'Invalid fields provided' } };
   }
 
+  // Check if user is authenticated
+  const user = await getUserSessionAndRole();
+  if (!user.isSignedIn) {
+    redirect('/auth/login');
+  }
+
+  if (user.role !== 'ADMIN') {
+    return { error: { message: 'Only admins are allowed to edit expenses.' } };
+  }
+
   // Attempt to update expenses
   const updatedExpenses = await expenseServices.updateExpenses(validatedFields.data);
-  console.log(updatedExpenses);
+
   // Revalidate paths to ensure updated data is displayed
   revalidatePath('/dashboard/expense-tracking/edit');
   revalidatePath('/dashboard/expense-tracking/view');
