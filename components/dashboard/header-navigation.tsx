@@ -9,6 +9,15 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import {
+  create_bill_route,
+  create_expense_route,
+  edit_bill_route,
+  edit_expense_route,
+  expense_statistics_route,
+  view_bill_route,
+  view_expense_route,
+} from '@/constants/links';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import * as React from 'react';
@@ -19,17 +28,17 @@ const navData = [
     content: [
       {
         title: 'Create Bill',
-        href: '/dashboard/bill/create',
+        href: create_bill_route,
         description: 'Open a form to input and save a new bill record.',
       },
       {
         title: 'Update Bill',
-        href: '/dashboard/bill/edit',
+        href: edit_bill_route,
         description: 'Edit existing bill records and update their details.',
       },
       {
         title: 'View Daily Bills',
-        href: '/dashboard/bill/view',
+        href: view_bill_route,
         description: 'Display a list of bills generated on a specific day.',
       },
     ],
@@ -39,22 +48,22 @@ const navData = [
     content: [
       {
         title: 'Add Expense',
-        href: '/dashboard/expense-tracking/create',
+        href: create_expense_route,
         description: 'Open a form to input and save a new expense record.',
       },
       {
         title: 'Unreviewed expenses',
-        href: '/dashboard/expense-tracking/edit',
+        href: edit_expense_route,
         description: 'Review and edit expenses that have not been finalized.',
       },
       {
         title: 'View daily expense',
-        href: '/dashboard/expense-tracking/view',
+        href: view_expense_route,
         description: 'Display a list of expenses incurred on a specific day.',
       },
       {
         title: 'Expense statistics',
-        href: '/dashboard/expense-tracking/statistics',
+        href: expense_statistics_route,
         description: 'Analyze and visualize expense data through charts and graphs.',
       },
     ],
@@ -75,7 +84,7 @@ export function HeaderNavigation() {
               <>
                 <NavigationMenuTrigger>{navItem.trigger}</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                  <ul className="grid gap-4 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                     {navItem.content.map((component) => (
                       <ListItem key={component.title} title={component.title} href={component.href}>
                         {component.description}

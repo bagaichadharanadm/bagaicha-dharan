@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { expenseServices } from '@/services';
 import { Suspense } from 'react';
 
-export default async function DailyExpensesPage() {
+export default async function DailyExpensesPage({ params }: { params: { slug: string } }) {
   const expenses = await expenseServices.getDailyExpenses({
-    tranDate: new Date().toISOString().slice(0, 10).replace(/-/g, ''),
+    tranDate: params.slug,
+    // For future development
     take: 5,
     skip: 5,
   });
@@ -26,7 +27,7 @@ export default async function DailyExpensesPage() {
             <DailyExpenseForm expenses={expenses} />
           </CardContent>
           <CardFooter></CardFooter>
-        </Card>
+        </Card>{' '}
       </AdminPage>
     </Suspense>
   );

@@ -1,10 +1,9 @@
 import authConfig from '@/auth.config';
 import prisma from '@/db';
+import { getUserById } from '@/services/user-service';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { UserRole } from '@prisma/client';
 import NextAuth, { DefaultSession } from 'next-auth';
-
-import { getUserById } from './services/user-service';
 
 export type ExtendedUser = DefaultSession['user'] & {
   role: UserRole;

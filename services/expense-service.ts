@@ -146,65 +146,69 @@ export async function rejectExpenseById(expenseId: string): Promise<Expense | nu
  */
 export async function updateExpenses(data: z.infer<typeof EditEmployeeExpensesSchema>): Promise<Expense[]> {
   const updatedExpenses = await prisma.$transaction(
-    data.records.map((record) =>
-      prisma.expense.update({
-        where: { id: record.id },
-        data: {
-          transactionDate: record.tranDate,
-          itemId: record.itemId,
-          supplierId: record.supplierId,
-          employeeId: record.employeeId,
-          quantity: record.quantity,
-          amount: record.amount,
-          invoice: record.invoice,
-          paymentType: record.paymentType as PaymentTypeEnum,
-          paymentStatus: record.paymentStatus as PaymentStatusEnum,
-          comments: record.comment,
-          reviewed: record.reviewed ?? false,
-          accepted: record.accepted ?? false,
-          createdAt: record.createdAt,
-          updatedAt: record.updatedAt,
-        },
-      }),
-    ),
+    data.records
+      .filter((row) => row.reviewed)
+      .map((record) =>
+        prisma.expense.update({
+          where: { id: record.id },
+          data: {
+            transactionDate: record.tranDate,
+            itemId: record.itemId,
+            supplierId: record.supplierId,
+            employeeId: record.employeeId,
+            quantity: record.quantity,
+            amount: record.amount,
+            invoice: record.invoice,
+            paymentType: record.paymentType as PaymentTypeEnum,
+            paymentStatus: record.paymentStatus as PaymentStatusEnum,
+            comments: record.comment,
+            reviewed: record.reviewed ?? false,
+            accepted: record.accepted ?? false,
+            createdAt: record.createdAt,
+            updatedAt: record.updatedAt,
+          },
+        }),
+      ),
   );
 
   return updatedExpenses;
 }
 
-export async function getDailyExpenses(tranDate: string) {
+export async function getDailyExpenses({ tranDate }: { tranDate: string; take: number; skip: number }) {
   const dailyExpenses = await prisma.$queryRaw`
     select
-  expense."id" as "id",
-  expense."transactionDate" as "tranDate",
-  expense."supplierId" as "supplierId",
-  supplier."supplierName" as "supplierName",
-  expense."employeeId" as "employeeId",
-  employee."name" as "employeeName",
-  expense."itemId" as "itemId",
-  item."itemDesc" as "itemName",
-  expense.quantity as "quantity",
-  expense.amount as "amount",
-  expense.invoice as "invoice",
-  expense."paymentType" as "paymentType",
-  expense."paymentStatus" as "paymentStatus",
-  expense."comments" as "comments",
-  expense."createdAt" as "createdAt",
-  case
-    when expense.reviewed then 
-    case when expense.accepted then 'APPROVED'
-    else 'REJECTED' end
-    else 'NOT REVIEWED'
-  end as "status"
-from
-  "Expense" as expense
-  inner join "Supplier" as supplier on expense."supplierId" = supplier.id
-  inner join "Item" as item on expense."itemId" = item.id
-  inner join "Employee" as employee on expense."employeeId" = employee.id
-where
-  to_char(expense."transactionDate", 'YYYYMMDD') = ${tranDate}
-  order by expense."updatedAt" desc
+      expense."id" as "id",
+      expense."transactionDate" as "tranDate",
+      expense."supplierId" as "supplierId",
+      supplier."supplierName" as "supplierName",
+      expense."employeeId" as "employeeId",
+      employee."name" as "employeeName",
+      expense."itemId" as "itemId",
+      item."itemDesc" as "itemName",
+      expense.quantity as "quantity",
+      expense.amount as "amount",
+      expense.invoice as "invoice",
+      expense."paymentType" as "paymentType",
+      expense."paymentStatus" as "paymentStatus",
+      expense."comments" as "comments",
+      expense."createdAt" as "createdAt",
+      case
+        when expense.reviewed then 
+          case when expense.accepted then 'APPROVED'
+          else 'REJECTED' end
+        else 'NOT REVIEWED'
+      end as "status"
+    from
+      "Expense" as expense
+      inner join "Supplier" as supplier on expense."supplierId" = supplier.id
+      inner join "Item" as item on expense."itemId" = item.id
+      inner join "Employee" as employee on expense."employeeId" = employee.id
+    where
+      to_char(expense."transactionDate", 'YYYYMMDD') = ${tranDate}
+    order by
+      expense."updatedAt" desc
   `;
+
   // Define the return type inline
   return dailyExpenses as {
     id: string;

@@ -30,3 +30,10 @@ export const DEFAULT_LOGIN_REDIRECT: string = '/dashboard';
  * @type {string}
  */
 export const LOGIN_PAGE_URL: string = '/auth/login';
+
+/**
+ * The routes that can only be visited by admins.
+ * @type{string[]}
+ */
+
+export const adminRoutes: string[] = ['/dashboard/expense-tracking/edit', '/dashboard/expense-tracking/statistics'];

@@ -1,5 +1,7 @@
+import { AdminPage } from '@/components/auth/admin-page';
 import { EditEmployeeExpenseForm } from '@/components/dashboard/expense-tracking/edit-employee-expense-form';
 import { employeeServices, expenseServices, itemServices, supplierServices } from '@/services';
+import { Suspense } from 'react';
 
 export default async function ViewUnreviewedExpensesPage() {
   const expenses = await expenseServices.getUnreviewedExpenses();
@@ -11,8 +13,12 @@ export default async function ViewUnreviewedExpensesPage() {
   }
 
   return (
-    <div>
-      <EditEmployeeExpenseForm expenses={expenses} suppliers={suppliers} items={items} employees={employees} />
+    <div className="h-full">
+      <Suspense>
+        <AdminPage>
+          <EditEmployeeExpenseForm expenses={expenses} suppliers={suppliers} items={items} employees={employees} />
+        </AdminPage>
+      </Suspense>
     </div>
   );
 }

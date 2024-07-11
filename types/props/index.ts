@@ -19,7 +19,6 @@ export type ExpenseTableProps = {
     createdAt: Date;
     status: string;
   }[];
-  showHeader?: boolean;
 };
 
 export type CreateEmployeeExpenseFormProps = {
@@ -33,4 +32,25 @@ export type EditEmployeeExpenseFormProps = {
   suppliers: { id: string; name: string }[];
   items: { id: string; name: string }[];
   employees: { id: string; name: string }[];
+};
+
+export type DailyExpenseFormProps = {
+  expenses: {
+    id: string;
+    tranDate: Date;
+    supplierId: string;
+    supplierName: string;
+    employeeId: string;
+    employeeName: string;
+    itemId: string;
+    itemName: string;
+    quantity: number;
+    amount: number;
+    invoice: number;
+    paymentType: string;
+    paymentStatus: string;
+    comment: string | null;
+    createdAt: Date;
+    status: string;
+  }[];
 };

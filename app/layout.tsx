@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning className="bg-secondary">
       <body className={inter.className} suppressHydrationWarning>
         <SessionProvider>{children}</SessionProvider>
       </body>

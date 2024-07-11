@@ -1,9 +1,20 @@
 'use client';
 
 import { expenseTrackingActions } from '@/actions';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -23,11 +34,6 @@ import { z } from 'zod';
 export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees }: EditEmployeeExpenseFormProps) {
   const [isPending, startTransition] = useTransition();
   const [formResponse, setFormResponse] = useState<
-    | {
-        success?: {
-          message: string;
-        };
-      }
     | {
         error?: {
           message: string;
@@ -69,13 +75,13 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
         })
         .then(() => {
           form.reset();
-          form.reset();
         })
         .then(() => {
           setTimeout(() => {
             setFormResponse(undefined); // Clearing formResponse after 3 seconds
           }, 2000); // Timeout set to 3 seconds (3000 milliseconds)
-        });
+        })
+        .then(() => {});
     });
   };
 
@@ -135,12 +141,22 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                 </TableHeader>
                 <TableBody>
                   {formArray.fields.map((row, index) => (
-                    <TableRow key={row.id}>
+                    <TableRow
+                      key={row.id}
+                      className={
+                        form.watch(`records.${index}.reviewed`) && !form.watch(`records.${index}.accepted`)
+                          ? 'bg-red-100 line-through text-destructive'
+                          : form.watch(`records.${index}.reviewed`) && form.watch(`records.${index}.accepted`)
+                            ? 'bg-emerald-100 text-emerald-500'
+                            : ''
+                      }
+                    >
                       <TableCell>
                         <FormField
                           control={form.control}
                           name={`records.${index}.tranDate`}
                           render={({ field }) => (
+                            // "flex flex-col gap-2 justify-end line-through text-destructive"
                             <FormItem className="flex flex-col gap-2 justify-end">
                               <Popover>
                                 <PopoverTrigger asChild>
@@ -178,10 +194,16 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                             control={form.control}
                             name={`records.${index}.supplierId`}
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem
+                                className={
+                                  form.watch(`records.${index}.reviewed`) && !form.watch(`records.${index}.accepted`)
+                                    ? 'flex flex-col gap-2 justify-end line-through text-destructive'
+                                    : 'flex flex-col gap-2 justify-end'
+                                }
+                              >
                                 <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
                                   <FormControl>
-                                    <SelectTrigger className="bg-gray-100">
+                                    <SelectTrigger className="bg-gray-100 mt-2">
                                       <SelectValue>
                                         {suppliers.find((supplier) => supplier.id === field.value)?.name ||
                                           'select supplier'}
@@ -209,10 +231,16 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                             control={form.control}
                             name={`records.${index}.itemId`}
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem
+                                className={
+                                  form.watch(`records.${index}.reviewed`) && !form.watch(`records.${index}.accepted`)
+                                    ? 'flex flex-col gap-2 justify-end line-through text-destructive'
+                                    : 'flex flex-col gap-2 justify-end'
+                                }
+                              >
                                 <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
                                   <FormControl>
-                                    <SelectTrigger className="bg-gray-100">
+                                    <SelectTrigger className="bg-gray-100 mt-2">
                                       <SelectValue>
                                         {items.find((item) => item.id === field.value)?.name || 'select item'}
                                       </SelectValue>
@@ -238,7 +266,7 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                           control={form.control}
                           name={`records.${index}.quantity`}
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex flex-col gap-2 justify-end">
                               <FormControl>
                                 <Input
                                   type="number"
@@ -259,7 +287,7 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                           control={form.control}
                           name={`records.${index}.amount`}
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex flex-col gap-2 justify-end">
                               <FormControl>
                                 <Input
                                   type="number"
@@ -280,7 +308,7 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                           control={form.control}
                           name={`records.${index}.invoice`}
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex flex-col gap-2 justify-end">
                               <FormControl>
                                 <Input
                                   type="number"
@@ -301,7 +329,7 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                           control={form.control}
                           name={`records.${index}.paymentType`}
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex flex-col gap-2 justify-end">
                               <FormControl>
                                 <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
                                   <SelectTrigger className="bg-gray-100">
@@ -333,7 +361,7 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                           control={form.control}
                           name={`records.${index}.paymentStatus`}
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex flex-col gap-2 justify-end">
                               <FormControl>
                                 <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
                                   <SelectTrigger className="bg-gray-100">
@@ -366,14 +394,14 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                           control={form.control}
                           name={`records.${index}.comment`}
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex flex-col gap-2 justify-end">
                               <FormControl>
                                 <Input
                                   type="text"
                                   placeholder="Add comment"
                                   {...field}
                                   onChange={(event) => field.onChange(event.target.value)}
-                                  className="w-[100px] bg-gray-100"
+                                  className="w-[400px] bg-gray-100"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -383,30 +411,38 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-center gap-2">
-                          <Button
-                            onClick={() => {
-                              startTransition(() => {
-                                form.setValue(`records.${index}.reviewed`, true);
-                                form.setValue(`records.${index}.accepted`, false);
-                              });
-                            }}
-                            variant="outline"
-                            className="text-red-400"
-                          >
-                            <Cross1Icon className="h-5 w-5" />
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              startTransition(() => {
-                                form.setValue(`records.${index}.reviewed`, true);
-                                form.setValue(`records.${index}.accepted`, true);
-                              });
-                            }}
-                            variant="outline"
-                            className="text-green-400"
-                          >
-                            <CheckCircledIcon className="h-5 w-5" />
-                          </Button>
+                          {(!form.watch(`records.${index}.reviewed`) ||
+                            (form.watch(`records.${index}.reviewed`) && form.watch(`records.${index}.accepted`))) && (
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                startTransition(() => {
+                                  form.setValue(`records.${index}.reviewed`, true);
+                                  form.setValue(`records.${index}.accepted`, false);
+                                });
+                              }}
+                              variant="outline"
+                              className="text-red-400"
+                            >
+                              <Cross1Icon className="h-5 w-5" />
+                            </Button>
+                          )}
+                          {(!form.watch(`records.${index}.reviewed`) ||
+                            (form.watch(`records.${index}.reviewed`) && !form.watch(`records.${index}.accepted`))) && (
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                startTransition(() => {
+                                  form.setValue(`records.${index}.reviewed`, true);
+                                  form.setValue(`records.${index}.accepted`, true);
+                                });
+                              }}
+                              variant="outline"
+                              className="text-green-400"
+                            >
+                              <CheckCircledIcon className="h-5 w-5" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -430,28 +466,40 @@ export function EditEmployeeExpenseForm({ expenses, items, suppliers, employees 
                         <Button
                           onClick={acceptAll}
                           type="button"
-                          className="flex justify-center items-center gap-2"
+                          className="flex justify-center items-center gap-2 bg-emerald-700 hover:bg-emerald-500 text-white"
                           variant="outline"
                         >
                           <span> Accept all</span>
                           <CheckCircledIcon />
                         </Button>
-                        <Button type="submit" className="inline-flex">
-                          Save
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="outline" disabled={form.watch('records').length === 0 || isPending}>
+                              Save
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. By default all expenses will be rejected so please ensure
+                                you have reviewed all expenses.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={form.handleSubmit(onSubmit)} disabled={isPending}>
+                                Yes
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </TableCell>
                   </TableRow>
                 </TableFooter>
               </Table>
               <div className="w-full flex justify-center items-center">
-                {formResponse && 'success' in formResponse && (
-                  <FormMessage className="bg-green-100 border border-green-300 shadow-md text-green-800 text-xs flex justify-center items-center py-1 px-2 rounded-md gap-2 min-w-[180px]">
-                    <CheckCircledIcon className="text-green-500 h-4 w-4" />
-                    <span>{formResponse.success?.message}</span>
-                  </FormMessage>
-                )}
-
                 {formResponse && 'error' in formResponse && (
                   <FormMessage className="bg-red-100 border border-red-300 shadow-md text-red-800 text-xs flex justify-center items-center py-1 px-2 rounded-md gap-2 min-w-[180px]">
                     <ExclamationTriangleIcon className="text-red-500 h-4 w-4" />
