@@ -1,5 +1,5 @@
-import { DevelopmentInProgress } from '@/components/ui/development-in-progress';
+import { ExpenseChart } from '@/components/dashboard/expense-tracking/expense-chart';
 
 export default function ExpenseStatisticsPage() {
-  return <DevelopmentInProgress title="Expense Statistics Page" />;
+  return <ExpenseChart />;
 }
